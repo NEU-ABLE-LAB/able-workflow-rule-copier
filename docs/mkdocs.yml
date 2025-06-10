@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: ABLE Workflow Rule Copier
+site_author: Michael Kane
+docs_dir: docs
+repo_name: "NEU-ABLE-LAB/able-workflow-rule-copier-dev/"
+repo_url: "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev/"
+edit_uri: edit/main/docs/docs  # enables “Edit on GitHub”
+dev_addr: '127.0.0.1:8004'
+
+theme:
+  name: material
+  palette:
+
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue grey
+      accent: red
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+
+  font:
+    text: Work Sans
+    code: Space Mono
+
+  features:
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+
+  logo: _images/logo.png
+  favicon: _images/logo.png
+
+extra:
+  version:
+    provider: mike
+
+plugins:
+  - asciinema-player
+  - git-revision-date-localized
+  - inline-select-svg
+  - literate-nav:
+      nav_file: SUMMARY.md
+      implicit_index: true
+      tab_length: 2
+  - macros
+  - mike
+  - mkdocs-jupyter:
+      include_source: false
+  - mkdocs-typer2:
+      pretty: true
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+  - search
+  - section-index
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - toc:
+      toc_depth: 3
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.blocks.html
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      check_paths: True
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: mermaid2.fence_mermaid_custom
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_javascript:
+  - _js/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+validation:
+  links:
+    unrecognized_links: ignore
