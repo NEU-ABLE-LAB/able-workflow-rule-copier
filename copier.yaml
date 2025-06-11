@@ -35,6 +35,18 @@ module_name:
   when: "{{ uses_package }}"
   # TODO-copier-rule Validate against existing module names in the project.
 
+smk_file_exists:
+  type: bool
+  help: "Does the smk file you want to write this rule to already exist?"
+
+smk_file_name:
+  type: str
+  help: "The name of the smk file where the rule will be implemented."
+  validator: >-
+    {% if not (smk_file_name | regex_search('^[a-zA-Z_][a-zA-Z0-9_\-]*$')) %}
+      The smk file name must start with a letter or underscore and can only contain letters, numbers, hyphens, and underscores.
+    {% endif %}
+  when: "{{ not smk_file_exists }}"
 
 # --- Post-configuration -----------------------------------------------------
 
