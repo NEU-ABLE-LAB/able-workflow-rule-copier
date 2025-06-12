@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import typer
-from pytest_copie.plugin import Copie
+from pytest_copie.plugin import Copie, Result
 from ruamel.yaml import YAML
 
 
@@ -60,7 +60,8 @@ def _render_example(
     template_dir: Path,
     dest_dir: Path,
     clean_dest: bool,
-) -> None:
+    parent_result: Result | None = None,
+) -> Result:
     """Run Copier once for ``answers_yml``.
 
     Parameters
@@ -83,7 +84,12 @@ def _render_example(
     copier_cfg = _create_copier_config(dest_dir / answers_yml.stem)
 
     # --- 3. run the copy through pytest-copie ---------------------------------
-    copie = Copie(template_dir, dest_dir, copier_cfg)
+    copie = Copie(
+        default_template_dir=template_dir,
+        test_dir=dest_dir,
+        config_file=copier_cfg,
+        parent_result=parent_result,
+    )
     result = copie.copy(extra_answers=answers_dict)
 
     if result.exception:
@@ -94,15 +100,7 @@ def _render_example(
         )
         raise SystemExit(result.exit_code or 1)
 
-    # pytest-copie nests the project inside dest_dir/copie000…  Flatten it.
-    inner = result.project_dir
-    if inner and inner.parent == dest_dir:
-        for p in inner.iterdir():
-            target = dest_dir / p.name
-            if target.exists():
-                shutil.rmtree(target) if target.is_dir() else target.unlink()
-            p.rename(target)
-        shutil.rmtree(inner, ignore_errors=True)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -175,10 +173,10 @@ def generate(
         example_dir.mkdir(exist_ok=True)
 
         # Render the package answers
-        _render_example(
+        parent_result = _render_example(
             answers_yml=example.package_answers,
             template_dir=TEMPLATE_PACKAGE_DIR,
-            dest_dir=example_dir,
+            dest_dir=example_dir / "package",
             clean_dest=True,
         )
 
@@ -186,8 +184,9 @@ def generate(
         _render_example(
             answers_yml=example.rule_answers,
             template_dir=TEMPLATE_RULE_DIR,
-            dest_dir=example_dir,
+            dest_dir=example_dir / "rule",
             clean_dest=False,
+            parent_result=parent_result,
         )
 
 
