@@ -1,4 +1,5 @@
 rule_name: "dag_svg"
+rule_description: "Converts the default Snakemake DAG to an SVG file for use in the documentation."
 uses_package: False
 smk_file_exists: True
 smk_file_name: "docs.smk"

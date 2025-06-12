@@ -18,9 +18,19 @@ rule_name:
       The rule name must start with a letter or underscore and can only contain letters, numbers, and underscores.
     {% endif %}
 
+rule_description:
+  type: str
+  help: "A short description of the rule to be created."
+  validator: >-
+    {% if not (rule_description | length > 0) %}
+      The rule description must not be empty.
+    {% endif %}
+
+# TODO-copier-rule consider if the rule should ever use the package, or whether the generic package will always be used.
 uses_package:
   type: bool
   help: "Whether the rule uses the project's python package or not."
+  when: False
 
 module_type:
   type: str
@@ -63,3 +73,6 @@ _answers_file: >-
   ./copier-answers/rule-{{ rule_name }}.yaml
 
 parent_project_tpl: "{{ parent_project_tpl_answers_file }}"
+
+_skip_if_exists:
+  - "workflow/rules/{{ smk_file_name }}"

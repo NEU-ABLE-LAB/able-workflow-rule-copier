@@ -1,0 +1,54 @@
+"""
+Script for the {{ rule_name }} rule
+
+{{ rule_description}}
+"""
+
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from loguru import logger
+
+if TYPE_CHECKING:  # pragma: no cover
+    from snakemake.script import snakemake
+
+def main(smk) -> None:  # type: ignore[no-untyped-def]
+
+    # Setup logging
+    logger.remove()
+    logger.add(smk.log.loguru)
+
+    # Generate DAG as SVG via graphviz
+    logger.debug("Generating DAG SVG using Snakemake")
+    with open(smk.log.stdout, "a") as stdout_log:
+
+        dag_dot = subprocess.run(
+            ["snakemake", "--forceall", "--dag"],
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stdout_log,
+        ).stdout
+
+        # Convert DOT → SVG with Graphviz
+        raw_svg = subprocess.run(
+            ["dot", "-Tsvg"],
+            input=dag_dot,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=stdout_log,
+        ).stdout
+
+
+
+
+if __name__ == "__main__":
+    try:
+        main(snakemake)
+    except NameError:
+        logger.error(
+            "This script is designed to be run as part of a Snakemake workflow. "
+            "Please run it through Snakemake."
+        )
+        sys.exit(0)
