@@ -1,4 +1,4 @@
-name: test-and-build
+name: test
 on:
   push:
     branches: [main]
@@ -24,7 +24,15 @@ jobs:
       PYTEST_ADDOPTS: "--color=yes"
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Checkout the `able-workflow-copier` repository
+        uses: actions/checkout@v4
+        with:
+          repository: https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev.git
+          ref: 16-templateworkflow
+          path: sandbox/able-workflow-copier-dev
 
       - name: Set up CPython ${{ matrix.python-version }}
         uses: actions/setup-python@v5
