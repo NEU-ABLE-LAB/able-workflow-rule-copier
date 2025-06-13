@@ -49,6 +49,13 @@ jobs:
       - name: Setup test suite
         run: tox run-parallel --parallel auto --parallel-no-spinner --notest --skip-missing-interpreters false
 
+      # Allow any git command in this job (including copier’s tmp clones)
+      # to access private repos over HTTPS without prompting.
+      - name: Authorise git for nested clones
+        run: |
+          git config --global url."https://${{ secrets.ABLE_REPOS_PAT }}@github.com/".insteadOf \
+                         "https://github.com/"
+
       - name: Run tox
         run: tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
 
