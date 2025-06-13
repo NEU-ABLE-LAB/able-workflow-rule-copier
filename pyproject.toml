@@ -182,6 +182,7 @@ exclude = [
 
 [tool.ruff.lint]
 extend-select = [
+    # "D", # Docstring checks
     "I",  # Import sorting
     "T201",  # Do not allow `print()` statements. Encourage `loguru` instead.
 ]
@@ -189,6 +190,9 @@ extend-select = [
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "logging".msg  = "Use Loguru instead."
 "warnings".msg = "Use Loguru instead."
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
 
 [tool.setuptools]
 py-modules = []
