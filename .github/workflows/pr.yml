@@ -55,6 +55,8 @@ jobs:
         run: |
           git config --global url."https://${{ secrets.ABLE_REPOS_PAT }}@github.com/".insteadOf \
                          "https://github.com/"
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions@github.com"
 
       - name: Run tox
         run: tox run-parallel --parallel auto --parallel-no-spinner --skip-pkg-install
