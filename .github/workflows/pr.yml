@@ -33,6 +33,7 @@ jobs:
           repository: NEU-ABLE-LAB/able-workflow-copier-dev
           ref: 16-templateworkflow
           path: sandbox/able-workflow-copier-dev
+          token: ${{ secrets.ABLE_REPOS_PAT }}
 
       - name: Set up CPython ${{ matrix.python-version }}
         uses: actions/setup-python@v5
