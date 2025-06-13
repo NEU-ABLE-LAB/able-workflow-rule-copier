@@ -179,6 +179,13 @@ def generate_cmd(
             test_dir=package_test_dir,
             config_file=config_file,
         )
+
+        if ex.package_answers is None:  # pragma: no cover
+            typer.echo(
+                f"[{ex.name}] No package answers found, skipping package template.",
+                err=True,
+            )
+            continue
         pkg_result = c_pkg.copy(extra_answers=ex.package_answers)
 
         if pkg_result.exception or pkg_result.exit_code != 0:  # pragma: no cover
@@ -197,6 +204,12 @@ def generate_cmd(
             config_file=config_file,
             parent_result=pkg_result,
         )
+        if ex.rule_answers is None:
+            typer.echo(
+                f"[{ex.name}] No rule answers found, skipping rule template.",
+                err=True,
+            )
+            continue
         rule_result = c_rule.copy(extra_answers=ex.rule_answers)
 
         if rule_result.exception or rule_result.exit_code != 0:  # pragma: no cover

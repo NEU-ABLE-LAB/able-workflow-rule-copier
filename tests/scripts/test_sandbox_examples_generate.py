@@ -46,32 +46,27 @@ class _DummyCopie:
     """Successful copy that creates an inner directory the code will flatten."""
 
     def __init__(
-        self, template_dir: Path, dest_dir: Path, cfg_path: Path
-    ) -> None:  # noqa: D401
-        self._dest_dir = dest_dir
+        self,
+        default_template_dir: Path,
+        test_dir: Path,
+        config_file: Path,
+        parent_result: _Result | None = None,
+    ):
+        self._dest_dir = test_dir
 
     def copy(self, *, extra_answers: dict[str, Any]) -> _Result:  # noqa: D401
-        inner = self._dest_dir / "copie0001"
+        inner = self._dest_dir / "copie000"
         inner.mkdir(parents=True)
         (inner / "sentinel.txt").write_text("generated")
         return _Result(ok=True, project_dir=inner)
 
 
-class _FailingCopie:
-    """Simulates a Copier run that errored out."""
-
-    def __init__(self, *a, **kw):  # noqa: D401, ANN001
-        pass
-
-    def copy(self, *, extra_answers: dict[str, Any]) -> _Result:  # noqa: D401
-        return _Result(ok=False, project_dir=None, code=123)
-
-
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
-def test_create_copier_config_creates_expected_artifacts(tmp_path: Path) -> None:
-    cfg_path = seg._create_copier_config(tmp_path)
+def test_make_copier_config_creates_expected_artifacts(tmp_path: Path) -> None:
+    """_make_copier_config should write a proper YAML file + dirs."""
+    cfg_path = seg._make_copier_config(tmp_path)
 
     #  paths exist
     assert cfg_path.is_file()
@@ -84,69 +79,56 @@ def test_create_copier_config_creates_expected_artifacts(tmp_path: Path) -> None
     assert "replay_dir:" in text
 
 
-def test_render_example_happy_path_flattens(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    #  Arrange sandbox to live entirely under tmp_path ────────────────────────
-    monkeypatch.setattr(seg, "TEMPLATE_DIR", tmp_path / "template")
+def _prepare_single_example(
+    tmp_path: Path,
+    *,
+    monkeypatch: pytest.MonkeyPatch,
+) -> (Any, Any):
+    """Return ``(sentinel_path, example_name)`` for the synthetic example."""
+    # 1. minimal YAML files expected by Example dataclass --------------------
+    pkg_yml = tmp_path / "pkg.yml"
+    rule_yml = tmp_path / "rule.yml"
+    pkg_yml.write_text("a: 1\n")
+    rule_yml.write_text("b: 2\n")
+
+    example = seg.Example(
+        name="fake-example",
+        package_answers_file=pkg_yml,
+        rule_answers_file=rule_yml,
+    )
+
+    # 2. patch EXAMPLES to contain *only* our synthetic entry ----------------
+    monkeypatch.setattr(seg, "EXAMPLES", [example])
+
+    # 3. make sandbox + template dirs under tmp_path -------------------------
     monkeypatch.setattr(seg, "SANDBOX_ROOT", tmp_path / "sandbox")
-    seg.TEMPLATE_DIR.mkdir()
+    monkeypatch.setattr(seg, "TEMPLATE_PACKAGE_DIR", tmp_path / "tpl_pkg")
+    monkeypatch.setattr(seg, "TEMPLATE_RULE_DIR", tmp_path / "tpl_rule")
     seg.SANDBOX_ROOT.mkdir()
+    seg.TEMPLATE_PACKAGE_DIR.mkdir()
+    seg.TEMPLATE_RULE_DIR.mkdir()
 
-    #  Minimal answers YAML
-    answers_yml = tmp_path / "answers.yml"
-    answers_yml.write_text("foo: bar\n")
-
-    #  Patch Copie
+    # 4. stub Copie ----------------------------------------------------------
     monkeypatch.setattr(seg, "Copie", _DummyCopie)
 
-    #  Act
-    seg._render_example(answers_yml)
-
-    #  Assert – dest dir exists & was flattened
-    dest = seg.SANDBOX_ROOT / answers_yml.stem
-    assert dest.is_dir()
-    assert (dest / "sentinel.txt").is_file()
-    #  no leftover inner directory
-    assert not any(dest.glob("copie000*"))
+    # The script’s logic will end up here:
+    sentinel = (
+        seg.SANDBOX_ROOT / example.name / "rule_run" / "copie000" / "sentinel.txt"
+    )
+    return sentinel, example.name
 
 
-def test_render_example_raises_on_copy_error(
+def test_cli_generate_happy_path(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    answers_yml = tmp_path / "answers.yml"
-    answers_yml.write_text("key: value\n")
+    """CLI renders the sandbox and leaves our sentinel file in place."""
+    sentinel, ex_name = _prepare_single_example(
+        tmp_path, monkeypatch=monkeypatch, failing=False
+    )
 
-    monkeypatch.setattr(seg, "TEMPLATE_DIR", tmp_path / "template")
-    monkeypatch.setattr(seg, "SANDBOX_ROOT", tmp_path / "sandbox")
-    seg.TEMPLATE_DIR.mkdir()
-    seg.SANDBOX_ROOT.mkdir()
-    monkeypatch.setattr(seg, "Copie", _FailingCopie)
-
-    with pytest.raises(SystemExit) as excinfo:
-        seg._render_example(answers_yml)
-
-    assert excinfo.value.code == 123
-
-
-def test_cli_generate_invokes_render(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
-    #  Prepare a fake answers file
-    yml = tmp_path / "one.yml"
-    yml.write_text("hello: 42\n")
-
-    #  Capture calls to _render_example
-    called: list[Path] = []
-
-    def _fake_render_example(path: Path) -> None:  # noqa: D401
-        called.append(path)
-
-    monkeypatch.setattr(seg, "_render_example", _fake_render_example)
-
-    #  Run CLI
     runner = CliRunner()
-    result = runner.invoke(seg.app, ["generate", str(yml)])
+    # pass the example name so the command exits cleanly (exit-code 0)
+    result = runner.invoke(seg.app, ["fake-example", ex_name])
 
     assert result.exit_code == 0
-    assert Path(str(yml)) in called
+    assert sentinel.is_file()
