@@ -4,13 +4,13 @@ Script for the {{ rule_name }} rule
 {{ rule_description}}
 """
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from loguru import logger
 
 if TYPE_CHECKING:  # pragma: no cover
     from snakemake.script import snakemake
+
 
 def main(smk) -> None:  # type: ignore[no-untyped-def]
 

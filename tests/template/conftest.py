@@ -25,6 +25,16 @@ from ruamel.yaml import YAML
 
 from pytest_copie.plugin import Copie
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Static paths
+# ─────────────────────────────────────────────────────────────────────────────
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+TEMPLATE_PACKAGE_DIR = (PROJECT_ROOT / "../able-workflow-copier-dev").resolve()
+TEMPLATE_RULE_DIR = PROJECT_ROOT
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
@@ -105,13 +115,6 @@ EXAMPLES: List[Example] = _discover_examples()
 # Nice parametrisation IDs
 _example_ids = [ex.name for ex in EXAMPLES]
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Static paths
-# ─────────────────────────────────────────────────────────────────────────────
-
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-TEMPLATE_PACKAGE_DIR = (PROJECT_ROOT / "../able-workflow-copier-dev").resolve()
-TEMPLATE_RULE_DIR = PROJECT_ROOT
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Fixture
