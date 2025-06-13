@@ -15,6 +15,7 @@ def ensure_package_template_repo(project_root: Path) -> Path:
     """
     dest = (project_root / "sandbox" / "able-workflow-copier-dev").resolve()
     if dest.is_dir():
+        logger.debug("Package template already exists at {}", dest)
         return dest
 
     logger.debug("Cloning package template into {}", dest)
