@@ -122,9 +122,7 @@ def test_cli_generate_happy_path(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """CLI renders the sandbox and leaves our sentinel file in place."""
-    sentinel, ex_name = _prepare_single_example(
-        tmp_path, monkeypatch=monkeypatch, failing=False
-    )
+    sentinel, ex_name = _prepare_single_example(tmp_path, monkeypatch=monkeypatch)
 
     runner = CliRunner()
     # pass the example name so the command exits cleanly (exit-code 0)
