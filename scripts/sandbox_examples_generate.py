@@ -27,6 +27,7 @@ Usage
 
 from __future__ import annotations
 
+import importlib.util
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -36,6 +37,24 @@ from typing import Any, Dict, List, Optional
 import typer
 from pytest_copie.plugin import Copie, Result
 from ruamel.yaml import YAML
+
+PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
+ensure_package_repo_path = PROJECT_ROOT / "scripts" / "pull_able_workflow_copier.py"
+module_name = ensure_package_repo_path.stem
+spec = importlib.util.spec_from_file_location(module_name, ensure_package_repo_path)
+module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+spec.loader.exec_module(module)  # type: ignore[union-attr]
+ensure_package_template_repo = module.ensure_package_template_repo
+
+###############################################################################
+#  Static paths used by every run                                             #
+###############################################################################
+
+
+TEMPLATE_PACKAGE_DIR: Path = ensure_package_template_repo(PROJECT_ROOT)
+TEMPLATE_RULE_DIR: Path = PROJECT_ROOT  # this repo
+SANDBOX_ROOT: Path = PROJECT_ROOT / "sandbox"
+
 
 ###############################################################################
 #  Convenience helpers                                                         #
@@ -108,20 +127,11 @@ class Example:
 # ──────────────────────────────────────────────────────────────────────────────
 EXAMPLES: List[Example] = [
     Example(
-        name="example-answers-able",
+        name="weh_interviews",
         package_answers_file=Path("example-answers/weh_interviews/package.yml"),
         rule_answers_file=Path("example-answers/weh_interviews/rule.yml"),
     )
 ]
-
-###############################################################################
-#  Static paths used by every run                                              #
-###############################################################################
-
-PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
-TEMPLATE_PACKAGE_DIR: Path = PROJECT_ROOT / "../able-workflow-copier-dev"
-TEMPLATE_RULE_DIR: Path = PROJECT_ROOT  # this repo
-SANDBOX_ROOT: Path = PROJECT_ROOT / "sandbox"
 
 ###############################################################################
 #  CLI                                                                         #
@@ -162,7 +172,7 @@ def generate_cmd(
 
     # Work each example
     for ex in to_render:
-        ex_dir = SANDBOX_ROOT / ex.name
+        ex_dir = SANDBOX_ROOT / f"example-{ex.name}"
         if ex_dir.exists():
             shutil.rmtree(ex_dir)
         ex_dir.mkdir(parents=True)

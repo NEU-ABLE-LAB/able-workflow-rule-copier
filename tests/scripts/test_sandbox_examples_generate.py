@@ -113,7 +113,11 @@ def _prepare_single_example(
 
     # The script’s logic will end up here:
     sentinel = (
-        seg.SANDBOX_ROOT / example.name / "rule_run" / "copie000" / "sentinel.txt"
+        seg.SANDBOX_ROOT
+        / f"example-{example.name}"
+        / "rule_run"
+        / "copie000"
+        / "sentinel.txt"
     )
     return sentinel, example.name
 

@@ -14,6 +14,7 @@ The test fixture yields ``(project_dir, example_name)`` exactly like before.
 
 from __future__ import annotations
 
+import importlib.util
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,13 +26,21 @@ from ruamel.yaml import YAML
 
 from pytest_copie.plugin import Copie
 
+PROJECT_ROOT: Path = Path(__file__).resolve().parents[2]
+ensure_package_repo_path = PROJECT_ROOT / "scripts" / "pull_able_workflow_copier.py"
+module_name = ensure_package_repo_path.stem
+spec = importlib.util.spec_from_file_location(module_name, ensure_package_repo_path)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+ensure_package_template_repo = module.ensure_package_template_repo
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Static paths
 # ─────────────────────────────────────────────────────────────────────────────
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-TEMPLATE_PACKAGE_DIR = (PROJECT_ROOT / "../able-workflow-copier-dev").resolve()
+
+TEMPLATE_PACKAGE_DIR = ensure_package_template_repo(PROJECT_ROOT)
 TEMPLATE_RULE_DIR = PROJECT_ROOT
 
 

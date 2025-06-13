@@ -67,6 +67,21 @@ smk_file_name:
     {% endif %}
   # when: "{{ not smk_file_exists }}"
 
+uses_conda:
+  type: bool
+  help: "Whether the rule uses a conda environment or not."
+  default: TRue
+
+conda_env_key:
+  type: str
+  help: "The key for the conda environment in the workflow config file."
+  default: "ENV_NAME"
+  validator: >-
+    {% if not (conda_env_key | regex_search('^[a-zA-Z_][a-zA-Z0-9_]*$')) %}
+      The conda environment key must start with a letter or underscore and can only contain letters, numbers, and underscores.
+    {% endif %}
+  when: "{{ uses_conda }}"
+
 # TODO-copier-rule Assign env_name and validate against workflow config files/schemas
 
 # --- Post-configuration -----------------------------------------------------
