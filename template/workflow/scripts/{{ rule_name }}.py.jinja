@@ -18,29 +18,33 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     logger.remove()
     logger.add(smk.log.loguru)
 
-    # Generate DAG as SVG via graphviz
-    logger.debug("Generating DAG SVG using Snakemake")
-    with open(smk.log.stdout, "a") as stdout_log:
+    # TODO Read snakemake `input:` entries as
+    # smk.input.<INPUT_NANME> as needed
 
-        dag_dot = subprocess.run(
-            ["snakemake", "--forceall", "--dag"],
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=stdout_log,
-        ).stdout
+    # TODO Read snakemake `output:` entries as
+    # smk.output.<OUTPUT_NAME> as needed
 
-        # Convert DOT → SVG with Graphviz
-        raw_svg = subprocess.run(
-            ["dot", "-Tsvg"],
-            input=dag_dot,
-            check=True,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=stdout_log,
-        ).stdout
+    # TODO Read snakemake `params:` entries as
+    # smk.params.<PARAM_NAME> as needed
 
+    # TODO Read snakemake `wildcards:` entries as
+    # smk.wildcards.<WILDCARD_NAME> as needed
 
+    # TODO Enable logging for subprocesses if needed
+    # # Generate DAG as SVG via graphviz
+    # logger.debug("Generating DAG SVG using Snakemake")
+    # with (
+    #     open(smk.log.stdout, "a") as stdout_log,
+    #     open(smk.log.stderr, "a") as stderr_log
+    # ):
+    #
+    #     dag_dot = subprocess.run(
+    #         # TODO Fill in command if applicable,
+    #         check=True,
+    #         text=True,
+    #         stdout=subprocess.PIPE,
+    #         stderr=stderr_log,
+    #     ).stdout
 
 
 if __name__ == "__main__":
