@@ -164,9 +164,7 @@ extras_or_groups = ["dev"]
 
 [tool.pytest.ini_options]
 testpaths = [
-  "tests/extensions",
-  "tests/hooks",
-  "tests/template",
+  "tests/",
 ]
 # Help with module resolution and avoids some common import errors.
 addopts = "--import-mode=importlib"
