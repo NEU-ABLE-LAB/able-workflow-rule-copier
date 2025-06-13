@@ -30,7 +30,7 @@ jobs:
       - name: Checkout the `able-workflow-copier` repository
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev.git
+          repository: NEU-ABLE-LAB/able-workflow-copier-dev
           ref: 16-templateworkflow
           path: sandbox/able-workflow-copier-dev
 
