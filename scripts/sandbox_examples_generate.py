@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Render *extra‑answers* YAML files into “sandbox examples” **without** pytest.
+Render *extra-answers* YAML files into “sandbox examples” **without** pytest.
 
 Each Example consists of two independent copier templates that will be applied
-in a parent‑then‑child order:
+in a parent-then-child order:
 
-1.  **Package** template  →  able‑workflow‑copier‑dev
-2.  **Rule**   template  →  this repository’s root
+1.  **Package** template  →  able-workflow-copier-dev
+2.  **Rule**   template  →  this repository's root
 
 For every example we
 
-    1. create  sandbox/<example‑name>/      (wiped if it already exists);
+    1. create  sandbox/<example-name>/      (wiped if it already exists);
     2. run the *package* template there;
     3. reuse the output of (2) as the parent when we run the *rule* template;
     4. print the final project path so that you can open it in an editor.
@@ -44,7 +44,7 @@ from ruamel.yaml import YAML
 
 def _make_copier_config(work_root: Path) -> Path:
     """
-    Re‑implement the `_copier_config_file` fixture: create a copier config file
+    Re-implement the `_copier_config_file` fixture: create a copier config file
     that points into *work_root* and return its path.
     """
     copier_dir = work_root / "copier"
@@ -141,10 +141,10 @@ def generate_cmd(
     )
 ) -> None:
     """
-    Render one or more *extra‑answers* files into the «sandbox» directory.
+    Render one or more *extra-answers* files into the «sandbox» directory.
 
     The command works exactly the same way as the original pytest fixture would,
-    but you can run it ad‑hoc from the shell – no pytest needed.
+    but you can run it ad-hoc from the shell - no pytest needed.
     """
     SANDBOX_ROOT.mkdir(exist_ok=True)
 
