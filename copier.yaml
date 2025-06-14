@@ -70,7 +70,7 @@ smk_file_name:
 uses_conda:
   type: bool
   help: "Whether the rule uses a conda environment or not."
-  default: TRue
+  default: True
 
 conda_env_key:
   type: str

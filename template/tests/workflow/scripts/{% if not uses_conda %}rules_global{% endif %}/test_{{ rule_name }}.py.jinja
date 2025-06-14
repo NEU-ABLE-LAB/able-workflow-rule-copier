@@ -1,0 +1,93 @@
+"""
+Unit-tests for {{ rule_name }}.
+
+{{ rule_description }}
+"""
+
+from __future__ import annotations
+
+import importlib.util
+import sys
+import types
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+# --------------------------------------------------------------------------- #
+# Load the script under test                                                  #
+# --------------------------------------------------------------------------- #
+
+ROOT = Path(__file__).parents[4]  # project root
+{%- if uses_conda %}
+SCRIPT = ROOT / "workflow/scripts/rules_conda_{{ conda_env_key }}/{{ rule_name }}.py"
+{% else %}
+SCRIPT = ROOT / "workflow/scripts/rules_global/{{ rule_name }}.py"
+{% endif -%}
+
+if not SCRIPT.exists():  # pragma: no cover
+    pytest.skip(
+        f"Cannot find {SCRIPT} - are you running tests from the repo root?",
+        allow_module_level=True,
+    )
+
+spec = importlib.util.spec_from_file_location("{{ rule_name }}", str(SCRIPT))
+if spec is None or spec.loader is None:  # pragma: no cover
+    pytest.skip(f"Cannot import {SCRIPT}", allow_module_level=True)
+
+module_under_test = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module_under_test)  # type: ignore[no-untyped-call]
+
+# --------------------------------------------------------------------------- #
+#  Inject a stub “snakemake” module so that the unconditional
+#  “from snakemake.script import snakemake” import inside the script
+#  under test succeeds even when the real Snakemake package is absent.
+# --------------------------------------------------------------------------- #
+
+_fake_sm = types.ModuleType("snakemake")
+_fake_sm_script = types.ModuleType("snakemake.script")
+# The script only references the *name* `snakemake` when run as __main__,
+# so an empty namespace placeholder is sufficient:
+_fake_sm_script.snakemake = SimpleNamespace()
+_fake_sm.script = _fake_sm_script
+sys.modules.setdefault("snakemake", _fake_sm)
+sys.modules.setdefault("snakemake.script", _fake_sm_script)
+
+
+# --------------------------------------------------------------------------- #
+# Helper factories                                                            #
+# --------------------------------------------------------------------------- #
+
+
+def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
+    """
+    Return a *snakemake* stand-in with the attrs required by ``main()``.
+    """
+
+    smk = SimpleNamespace(
+        input=SimpleNamespace(
+            readme=tmp_path / "README.md",
+        ),
+        log=SimpleNamespace(
+            loguru=tmp_path / "logs" / "conda_localize.log",
+            stdout=tmp_path / "logs" / "stdout.log",
+            stderr=tmp_path / "logs" / "stderr.log",
+        ),
+    )
+
+    # Create dummy directories and files
+    smk.input.readme.touch()
+    smk.log.loguru.parent.mkdir(parents=True, exist_ok=True)
+
+    return smk
+
+
+# --------------------------------------------------------------------------- #
+# Tests                                                                       #
+# --------------------------------------------------------------------------- #
+
+
+def test_main_runs(tmp_path):
+    """A stand-in test for the main() function."""
+    smk = _fake_snakemake(tmp_path)
+    module_under_test.main(smk)
