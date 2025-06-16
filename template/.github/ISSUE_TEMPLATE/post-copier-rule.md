@@ -13,20 +13,20 @@ This issue is for tracking the development of a rule that was copied from the `a
 
 ### Required
 
-1. [ ] `workflow/scripts/rule_*/{{ rule_name }}.py`
-   1. [ ] Assign the desired snakemake directives (e.g., `input` to variables.
-   2. [ ] Fill in the rule logic within main().
-2. [ ] `workflow/rules/{{ smk_file_name }}`
+1. [ ] `workflow/rules/{{ smk_file_name }}`
    1. [ ] Specify `input:` directives as needed.
    2. [ ] Specify `output:` directives as needed.
    3. [ ] Specify `params:` directives as needed.
    4. [ ] Specify `wildcards:` directives as needed.
    5. [ ] If the rule uses a `conda:` environment, make sure to reference the appropriate entry in `config["CONDA"]["ENVS"]["<ENV_NAME>"]`
-3. [ ] `test/workflow/scripts/rule_*/test_{{ rule_name }}.py`
+2. [ ] `workflow/scripts/rule_*/{{ rule_name }}.py`
+   1. [ ] Assign the desired snakemake directives (e.g., `input` to variables.
+   2. [ ] Fill in the rule logic within main().
+3. [ ] `tests/workflow/rules/test_{{ rule_name }}.py`: Add dummy data so that rule integration tests work.
+4. [ ] `test/workflow/scripts/rule_*/test_{{ rule_name }}.py`
    1. [ ] Update the `SimpleNamespace()` parameters of `_fake_snakemake()` with dummy values for the expected inputs of the function under test.
    2. [ ] Replace the dummy `test_main_runs()` test with a more thorough test of the script under test.
-4. [ ] Update documentation on how to use rule or expected output.
-5. [ ] Add dummy data to `tests/workflow/rules/test_{{ rule_name }}.py` so that rule integration tests work.
+5. [ ] Update documentation on how to use rule or expected output. This should be automatically extracted from rule docstring.
 
 ### Optional
 
