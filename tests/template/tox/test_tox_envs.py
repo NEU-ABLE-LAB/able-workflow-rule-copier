@@ -9,6 +9,8 @@ gets its own, independent pytest test.
 
 from __future__ import annotations
 
+import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -25,12 +27,55 @@ from tests.template.conftest import (
 )
 from tests.template.tox.conftest import _list_tox_envs
 
-###############################################################################
-# 1.  Dynamic parametrisation --------------------------------------------------
-###############################################################################
+
+# --- Helpers ----------------------------------------------------------------
+def _bootstrap_git_repo(path: Path) -> None:
+    """
+    Ensure *path* is a Git repo with one commit so that setuptools-scm can
+    discover a version string.
+
+    Safe to call repeatedly: it does nothing if .git/ already exists.
+    """
+    if (path / ".git").exists():
+        return
+
+    # Initialise repo
+    subprocess.run(
+        ["git", "init", "--quiet", "--initial-branch=main"],
+        cwd=path,
+        check=True,
+    )
+
+    # Stage everything
+    subprocess.run(["git", "add", "-A"], cwd=path, check=True)
+
+    # Commit with throw-away identity (avoids global git config leakage)
+    env = os.environ.copy()
+    env.update(
+        {
+            "GIT_AUTHOR_NAME": "CI",
+            "GIT_AUTHOR_EMAIL": "ci@example.invalid",
+            "GIT_COMMITTER_NAME": "CI",
+            "GIT_COMMITTER_EMAIL": "ci@example.invalid",
+        }
+    )
+    subprocess.run(
+        ["git", "commit", "--quiet", "-m", "Initial commit"],
+        cwd=path,
+        env=env,
+        check=True,
+    )
 
 
+# --- PyTest Hooks -----------------------------------------------------------
 def pytest_generate_tests(metafunc):
+    """
+    Dynamically parametrize tests for pytest with all template variants and
+    the tox tests within those rendered templates. This hook is called for
+    each test function to generate parameters. It will only apply to tests
+    that request the 'variant_id' and 'env_name' parameters.
+    """
+
     # Only apply to the test that asks for these args
     if {"variant_id", "env_name"} <= set(metafunc.fixturenames):
 
@@ -45,13 +90,12 @@ def pytest_generate_tests(metafunc):
         for ex in EXAMPLES:
             var_id = ex.name
             if var_id not in cache:
-                #
-                # ─── Render the example (package then rule) ─────────────────
-                #
+
+                # Prepare a temporary directory for rendering
                 tmp_root = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
                 config_file = _make_copier_config(tmp_root)
 
-                # 1️⃣ package template
+                # Render package template
                 pkg_dir = tmp_root / "pkg"
                 pkg_dir.mkdir()
                 pkg = _new_copie(
@@ -60,7 +104,7 @@ def pytest_generate_tests(metafunc):
                     config_file=config_file,
                 ).copy(extra_answers=ex.package_answers)
 
-                # 2️⃣ rule template (child)
+                # Render rule template (child)
                 rule_dir = tmp_root / "rule"
                 rule_dir.mkdir()
                 rule = _new_copie(
@@ -92,17 +136,16 @@ def pytest_generate_tests(metafunc):
         logger.warning(f"Skipping dynamic param for {metafunc.function}")
 
 
-###############################################################################
-# 2.  The actual test ---------------------------------------------------------
-###############################################################################
-
-
+# --- Tests ------------------------------------------------------------------
 def test_inner_tox_env_passes(variant_id, env_name, request):
     """
     Re-use the already-rendered project captured during collection
     and assert that the selected tox environment exits cleanly.
     """
     project_dir, _ = request.config._tox_collect_cache[variant_id]
+
+    # Ensure the project directory is a Git repo (for setuptools-scm)
+    _bootstrap_git_repo(project_dir)
 
     completed = subprocess.run(
         ["tox", "run-parallel", "--parallel-no-spinner", "--quiet", "-e", env_name],
