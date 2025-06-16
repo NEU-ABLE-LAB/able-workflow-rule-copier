@@ -10,16 +10,12 @@ from pathlib import Path
 
 import pytest
 
-import tomllib  # Python 3.11+
+import tomllib
 from loguru import logger
 from typing import List, Sequence
 
 
-###############################################################################
-# 3.  Return the list of tox envs for *that* rendered project
-###############################################################################
-
-
+# --- Helpers ----------------------------------------------------------------
 def _parse_env_list_from_config(project_dir: Path) -> list[str]:
     """Return ``tox.env_list`` by reading *pyproject.toml* (or *tox.ini*)."""
     pyproject = project_dir / "pyproject.toml"
@@ -90,6 +86,7 @@ def _list_tox_envs(
     return envs
 
 
+# --- Fixtures ---------------------------------------------------------------
 @pytest.fixture(scope="session")
 def env_matrix(rendered) -> dict[str, list[str]]:
     """
