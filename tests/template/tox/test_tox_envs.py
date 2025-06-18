@@ -10,11 +10,10 @@ gets its own, independent pytest test.
 from __future__ import annotations
 
 import os
-import shutil
+import sys
 import subprocess
 import tempfile
 from pathlib import Path
-import pytest
 
 from loguru import logger
 
@@ -22,6 +21,7 @@ from tests.template.conftest import (
     EXAMPLES,
     _make_copier_config,
     _new_copie,
+    _run_copie_with_output_control,
     TEMPLATE_PACKAGE_DIR,
     TEMPLATE_RULE_DIR,
 )
@@ -98,21 +98,35 @@ def pytest_generate_tests(metafunc):
                 # Render package template
                 pkg_dir = tmp_root / "pkg"
                 pkg_dir.mkdir()
-                pkg = _new_copie(
+                pkg_copie = _new_copie(
                     template_dir=TEMPLATE_PACKAGE_DIR,
                     test_dir=pkg_dir,
                     config_file=config_file,
-                ).copy(extra_answers=ex.package_answers)
+                )
+
+                # Run the package template with output control
+                # to avoid cluttering the test output with copier's own logs.
+                # This is especially useful when running tests with `-v` or `-vv`.
+                pkg = _run_copie_with_output_control(
+                    metafunc.config, pkg_copie, ex.package_answers
+                )
 
                 # Render rule template (child)
                 rule_dir = tmp_root / "rule"
                 rule_dir.mkdir()
-                rule = _new_copie(
+                rule_copie = _new_copie(
                     template_dir=TEMPLATE_RULE_DIR,
                     test_dir=rule_dir,
                     config_file=config_file,
                     parent_result=pkg,
-                ).copy(extra_answers=ex.rule_answers)
+                )
+
+                # Run the rule template with output control
+                # to avoid cluttering the test output with copier's own logs.
+                # This is especially useful when running tests with `-v` or `-vv`.
+                rule = _run_copie_with_output_control(
+                    metafunc.config, rule_copie, ex.rule_answers
+                )
 
                 project_dir: Path = rule.project_dir
                 envs = _list_tox_envs(project_dir)
@@ -123,7 +137,21 @@ def pytest_generate_tests(metafunc):
                 logger.warning("No tox envs found for {}, skipping", var_id)
                 continue
 
+            # Retrieve the requested environments to run.
+            # If the user did not specify any, use all available
+            # environments for this variant.
+            # This is done via the `--template-envs` option.
+            # SEE: pytest_addoption() in conftest.py
+            try:
+                requested = set(metafunc.config.getoption("inner_envs") or [])
+            except ValueError:
+                # If the option is not set, use an empty set
+                requested = set()
+
             for env in envs:
+                # If the user asked for a subset (--inner-envs=*) keep only those
+                if requested and env not in requested:
+                    continue
                 argvalues.append((var_id, env))
                 argids.append(f"{var_id}:{env}")
 
@@ -147,14 +175,108 @@ def test_inner_tox_env_passes(variant_id, env_name, request):
     # Ensure the project directory is a Git repo (for setuptools-scm)
     _bootstrap_git_repo(project_dir)
 
-    completed = subprocess.run(
-        ["tox", "run-parallel", "--parallel-no-spinner", "--quiet", "-e", env_name],
+    # Determine if the tox environment should run in parallel or not.
+    # If the user specified --tox-no-parallel, run tox in serial.
+    # SEE: pytest_addoption() in conftest.py
+    extra_args = ["--"]
+    if request.config.getoption("tox_no_parallel"):
+        run_args = ["run"]
+    else:
+        run_args = [
+            "run-parallel",
+            "--parallel-no-spinner",
+        ]
+
+    if request.config.getoption("capture") in ["no", "tee-sys"]:
+        # If --capture=no or -s is specified, disable output capturing
+        extra_args.extend(
+            [
+                "--force-sugar",
+            ]
+        )
+
+    if request.config.getoption("template_no_capture"):
+        # If --template-no-capture is specified, disable output capturing
+        extra_args.extend(
+            [
+                "--capture=no",
+            ]
+        )
+
+    verbosity = request.config.getoption("verbose")
+    if verbosity >= 2:
+        # If verbosity is 2 or higher, enable debug output
+        extra_args.append("-vv")
+    elif verbosity == 1:
+        # If verbosity is 1, enable info output
+        extra_args.append("-v")
+
+    # Setup tox environments
+    setup_args = [
+        "tox",
+        "run-parallel",
+        "--parallel-no-spinner",
+        "--notest",
+        "--skip-missing-interpreters",
+        "false",
+        "-e",
+        env_name,
+    ]
+    if verbosity >= 2:
+        subprocess.run(
+            setup_args,
+            cwd=project_dir,
+            check=True,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            text=True,
+        )
+    else:
+        subprocess.run(
+            setup_args,
+            cwd=project_dir,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+    # Run the tox tests within the rendered project
+    process = subprocess.Popen(
+        [
+            "tox",
+            *run_args,
+            "--skip-pkg-install",
+            "--quiet",
+            "-e",
+            env_name,
+            *extra_args,
+        ],
         cwd=project_dir,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
     )
+
+    stdout, stderr = [], []
+
+    # Stream output live and capture
+    for line in process.stdout:
+        sys.stdout.write(line)
+        stdout.append(line)
+    for line in process.stderr:
+        sys.stderr.write(line)
+        stderr.append(line)
+
+    process.wait()
+    completed = subprocess.CompletedProcess(
+        args=process.args,
+        returncode=process.returncode,
+        stdout="".join(stdout),
+        stderr="".join(stderr),
+    )
+
     assert completed.returncode == 0, (
-        f"\n[variant = {variant_id!s}, env = {env_name!s}]\n"
+        f"\n[variant = {variant_id}, env = {env_name}]\n"
         f"stdout:\n{completed.stdout}\n"
         f"stderr:\n{completed.stderr}"
     )

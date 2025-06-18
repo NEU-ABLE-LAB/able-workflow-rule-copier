@@ -1,5 +1,7 @@
-rule_name: "dag_svg"
-rule_description: "Converts the default Snakemake DAG to an SVG file for use in the documentation."
+rule_name: "test_rule"
+rule_description: "Test the creation, unit tests, and integration tests for a new rule."
 uses_package: False
 smk_file_exists: True
-smk_file_name: "docs.smk"
+smk_file_name: "test_rule.smk"
+uses_conda: True
+conda_env_key: "DOCS"

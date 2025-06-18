@@ -10,11 +10,18 @@ class PropagateHandler(logging.Handler):
         logging.getLogger(record.name).handle(record)
 
 
-logger.add(PropagateHandler(), level="INFO")
-logger.info("loguru INFO messages passed to standard logging for pytests")
+def pytest_configure(config):
 
-logger.add(PropagateHandler(), level="DEBUG")
-logger.info("loguru DEBUG messages passed to standard logging for pytests")
+    verbosity = getattr(config.option, "verbose", 0)
+
+    if verbosity == 1:
+        logger.add(PropagateHandler(), level="INFO")
+        logger.info("loguru INFO messages passed to standard logging for pytests")
+
+    if verbosity >= 2:
+        logger.add(PropagateHandler(), level="DEBUG")
+        logger.info("loguru DEBUG messages passed to standard logging for pytests")
+
 
 # Forward every WARNING‐level log to the Python warnings subsystem
 logger.add(

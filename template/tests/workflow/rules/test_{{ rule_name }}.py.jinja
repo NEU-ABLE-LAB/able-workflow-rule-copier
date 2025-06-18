@@ -1,19 +1,31 @@
 """Integration tests for building documentation."""
 
-import shlex
-import subprocess
 from pathlib import Path
-from typing import List
 
 import pytest
 from loguru import logger
 
+from .conftest import _snakemake
 
-# --- Helpers ----------------------------------------------------------------
-def _snakemake(workspace: Path, extra: List[str]) -> None:
-    cmd = ["snakemake", *extra]
-    logger.debug(f"Executing: {shlex.join(cmd)}")
-    subprocess.run(cmd, cwd=workspace, check=True)
+# --- Fixtures ---------------------------------------------------------------
+# Track which workspaces have had the dummy file created
+_CREATED_DUMMY_INPUT = set()
+
+
+@pytest.fixture(autouse=True)
+def create_dummy_input_file(workspace):
+    """Create the expected input file so Snakemake can build the DAG, only once per workspace."""
+    workspace_id = str(workspace.resolve())
+    if workspace_id in _CREATED_DUMMY_INPUT:
+        return
+
+    # Create a dummy input file for the `all_data` rule
+    readme = workspace / "data" / "README.md"
+    readme.parent.mkdir(parents=True, exist_ok=True)
+    readme.touch()
+
+    logger.debug(f"Created dummy input file: {readme}")
+    _CREATED_DUMMY_INPUT.add(workspace_id)
 
 
 # --- Tests ------------------------------------------------------------------
@@ -25,4 +37,4 @@ def test_localize_conda_envs(workspace: Path) -> None:
 
 @pytest.mark.order(2)
 def test_dag_svg(workspace: Path) -> None:
-    _snakemake(workspace, ["--dry-run", "{{ rule_name }}"])
+    _snakemake(workspace, ["{{ rule_name }}"])

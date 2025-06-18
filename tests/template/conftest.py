@@ -15,6 +15,8 @@ The test fixture yields ``(project_dir, example_name)`` exactly like before.
 from __future__ import annotations
 
 import importlib.util
+import os
+import sys
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -80,6 +82,20 @@ def _new_copie(
     )
 
 
+def _run_copie_with_output_control(config, copie_session, answers):
+    """Run copie_session.copy with output suppression based on pytest verbosity."""
+    # Only suppress output if verbosity < 2 (i.e., not -vv or higher)
+    if config.option.verbose < 2:
+        with open(os.devnull, "w") as devnull:
+            old_stdout, old_stderr = sys.stdout, sys.stderr
+            sys.stdout, sys.stderr = devnull, devnull
+            try:
+                result = copie_session.copy(extra_answers=answers)
+            finally:
+                sys.stdout, sys.stderr = old_stdout, old_stderr
+    return result
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Example discovery
 # ─────────────────────────────────────────────────────────────────────────────
@@ -138,7 +154,7 @@ def rendered(request):
     tmp_root = Path(tempfile.mkdtemp(prefix=f"copie_{example.name}_"))
     config_file = _make_copier_config(tmp_root)
 
-    # 1️⃣ Package template (parent)
+    # Package template (parent)
     pkg_dir = tmp_root / "package"
     pkg_dir.mkdir()
     pkg_copie = _new_copie(
@@ -146,13 +162,21 @@ def rendered(request):
         test_dir=pkg_dir,
         config_file=config_file,
     )
-    pkg_result = pkg_copie.copy(extra_answers=example.package_answers)
+
+    # Run the package template with output control
+    # to avoid cluttering the test output with copier's own logs.
+    # This is especially useful when running tests with `-v` or `-vv`.
+    pkg_result = _run_copie_with_output_control(
+        request.config, pkg_copie, example.package_answers
+    )
+
+    # Smoke test the package template
     if pkg_result.exit_code or pkg_result.exception:
         pytest.fail(
             f"Package template failed for {example.name}: {pkg_result.exception}"
         )
 
-    # 2️⃣ Rule template (child)
+    # Rule template (child)
     rule_dir = tmp_root / "rule"
     rule_dir.mkdir()
     rule_copie = _new_copie(
@@ -161,7 +185,17 @@ def rendered(request):
         config_file=config_file,
         parent_result=pkg_result,
     )
+
+    # Run the rule template with output control
+    # to avoid cluttering the test output with copier's own logs.
+    # This is especially useful when running tests with `-v` or `-vv`.
+    rule_result = _run_copie_with_output_control(
+        request.config, rule_copie, example.rule_answers
+    )
+
     rule_result = rule_copie.copy(extra_answers=example.rule_answers)
+
+    # Smoke test the rule template
     if rule_result.exit_code or rule_result.exception:
         pytest.fail(f"Rule template failed for {example.name}: {rule_result.exception}")
 

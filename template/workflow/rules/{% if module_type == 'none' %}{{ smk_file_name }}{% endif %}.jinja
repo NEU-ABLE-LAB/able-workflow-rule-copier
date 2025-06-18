@@ -3,7 +3,7 @@ rule {{ rule_name }}:
     localrule: True
     input:
         # TODO: Define input files if needed. All inputs should be named.
-        readme="README.md",
+        readme="data/README.md",
     # output:
     # TODO: Define output files if needed. All outputs should be named.
     # wildcards:
@@ -14,9 +14,13 @@ rule {{ rule_name }}:
         stderr=str(LOG_DIR / "{{ rule_name }}" / "stderr.log"),
     {% if uses_conda -%}
     conda:
-        get_localized_conda(config["CONDA"]["ENVS"]["{{ env_name }}"])
+        get_localized_conda(config["CONDA"]["ENVS"]["{{ conda_env_key }}"])
     {%- endif %}
     # params:
     # TODO: Define parameters if needed. All parameters should be named.
     script:
-        str(WORKFLOW_BASE / "scripts/rules/{{ rule_name }}.py")
+        {% if uses_conda -%}
+            str(WORKFLOW_BASE / "scripts/rules_conda_{{ conda_env_key }}/{{ rule_name }}.py")
+        {%- else %}
+            str(WORKFLOW_BASE / "scripts/rules_global/{{ rule_name }}.py")
+        {%- endif %}

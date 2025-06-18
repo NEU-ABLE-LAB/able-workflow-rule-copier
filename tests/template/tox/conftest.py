@@ -15,6 +15,39 @@ from loguru import logger
 from typing import List, Sequence
 
 
+# --- pytest options ---------------------------------------------------------
+def pytest_addoption(parser):
+    """
+    Add command-line options to filter which tox environments to run.
+    """
+    parser.addoption(
+        "--template-envs",
+        action="append",
+        dest="inner_envs",
+        metavar="ENV",
+        help=(
+            "Only run the specified *inner* tox environment(s); "
+            + "may be given more than once."
+        ),
+    )
+
+    parser.addoption(
+        "--template-no-capture",
+        action="store_true",
+        dest="template_no_capture",
+        help=(
+            "Do not capture output from the *inner* tox environment(s), render it to STDOUT."
+        ),
+    )
+
+    parser.addoption(
+        "--no-parallel",
+        action="store_true",
+        dest="tox_no_parallel",
+        help=("Do not run the specified *inner* tox environment(s) in parallel."),
+    )
+
+
 # --- Helpers ----------------------------------------------------------------
 def _parse_env_list_from_config(project_dir: Path) -> list[str]:
     """Return ``tox.env_list`` by reading *pyproject.toml* (or *tox.ini*)."""

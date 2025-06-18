@@ -26,7 +26,8 @@ This issue is for tracking the development of a rule that was copied from the `a
 4. [ ] `test/workflow/scripts/rule_*/test_{{ rule_name }}.py`
    1. [ ] Update the `SimpleNamespace()` parameters of `_fake_snakemake()` with dummy values for the expected inputs of the function under test.
    2. [ ] Replace the dummy `test_main_runs()` test with a more thorough test of the script under test.
-5. [ ] Update documentation on how to use rule or expected output. This should be automatically extracted from rule docstring.
+5. [ ] Update `workflow/Snakefile` to include the new smk file `workflow/rules/{{ smk_file_name }}`
+6. [ ] Update documentation on how to use rule or expected output. This should be automatically extracted from rule docstring.
 
 ### Optional
 
