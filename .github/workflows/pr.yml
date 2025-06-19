@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: NEU-ABLE-LAB/able-workflow-copier-dev
-          ref: 9ffda43ce1e075a26d033598dd64d485ac30f695
+          ref: 3c1b762006dfb0a8c2bc45e237ccd05fcba46c25
           path: sandbox/able-workflow-copier-dev
           token: ${{ secrets.ABLE_REPOS_PAT }}
 
