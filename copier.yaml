@@ -87,7 +87,7 @@ conda_env_key:
 # --- Post-configuration -----------------------------------------------------
 
 _answers_file: >-
-  ./copier-answers/rule-{{ rule_name }}.yaml
+  ./copier-answers/rule-{{ rule_name }}.yml
 
 parent_project_tpl: "{{ parent_project_tpl_answers_file }}"
 
