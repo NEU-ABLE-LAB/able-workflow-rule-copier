@@ -20,7 +20,9 @@ def main() -> None:
     target = Path("workflow/rules/includes.smk")
 
     if not target.exists():
-        sys.exit(f"ERROR: {target} not found")
+        sys.exit(
+            f"ERROR: {target} not found, but at least the dummy version should exist."
+        )
 
     new_line = f'include: "{smk_file}"\n'
 
