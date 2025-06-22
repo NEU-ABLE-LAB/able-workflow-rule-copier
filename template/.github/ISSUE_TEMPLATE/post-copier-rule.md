@@ -18,7 +18,6 @@ This issue is for tracking the development of a rule that was copied from the `a
    2. [ ] Specify `output:` directives as needed.
    3. [ ] Specify `params:` directives as needed.
    4. [ ] Specify `wildcards:` directives as needed.
-   5. [ ] If the rule uses a `conda:` environment, make sure to reference the appropriate entry in `config["CONDA"]["ENVS"]["<ENV_NAME>"]`
 2. [ ] `workflow/scripts/rule_*/{{ rule_name }}.py`
    1. [ ] Assign the desired snakemake directives (e.g., `input` to variables.
    2. [ ] Fill in the rule logic within main().
