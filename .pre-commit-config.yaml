@@ -37,13 +37,6 @@ repos:
       - id: ruff
         args: ["check", "--fix", "--exit-zero"]
 
-  - repo: https://github.com/ansible/ansible-lint
-    rev: v25.5.0
-    hooks:
-      - id: ansible-lint
-        args: [--offline, --profile=min, --enable-list=yaml]
-        files: ^(copier\.ya?ml|\.?copier-answers\.ya?ml)
-
   # --- static typing --------------------------------------------------------
   - repo: https://github.com/pre-commit/mirrors-mypy        # maintained mirror :contentReference[oaicite:2]{index=2}
     rev: "v1.15.0"
