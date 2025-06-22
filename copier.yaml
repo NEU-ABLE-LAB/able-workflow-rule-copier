@@ -92,7 +92,7 @@ _answers_file: >-
 parent_project_tpl: "{{ parent_project_tpl_answers_file }}"
 
 _skip_if_exists:
-  - "workflow/rules/includes.smk
+  - "workflow/rules/includes.smk"
 
 # Post-generation tasks
 _tasks:
