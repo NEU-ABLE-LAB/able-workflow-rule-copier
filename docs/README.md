@@ -1,5 +1,7 @@
 # ABLE Workflow Rule copier template documentation
 
+<!--include-start-->
+
 ## Overview
 
 The documentation for this project uses [MkDocs](https://www.mkdocs.org/) and the
@@ -11,24 +13,16 @@ The navigation structure is specified with
 [`literate-nav`](https://pypi.org/project/mkdocs-literate-nav/) in the
 `SUMMARY.md` file within the `docs/docs/` directory and each subdirectory.
 
-/// note
-
-    This documentation *can* be served as a stand alone site, but is intended to be included in the main [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev) documentation via a gitsubmodule and a symlink to this project's `docs/docs/` directory.
-
-## Building the documentation locally
+## Serving the documentation locally
 
     ```bash
-    mkdocs build  --config-file docs/mkdocs.yml
+    ./scritps/mkdocs.sh
     ```
 
     The assumes that you have already set up the development environment.
     See the main `README.md` file for instructions.
 
-## Serving the documentation locally
-
-    ```bash`
-    mkdocs serve --config-file docs/mkdocs.yml
-    ```
+<!--include-end-->
 
 ## More information
 

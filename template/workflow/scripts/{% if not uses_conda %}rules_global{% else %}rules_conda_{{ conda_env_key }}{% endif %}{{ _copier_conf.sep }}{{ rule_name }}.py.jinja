@@ -31,21 +31,24 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     # TODO Read snakemake `wildcards:` entries as
     # smk.wildcards.<WILDCARD_NAME> as needed
 
+    # Setup loguru logging
+    logger.remove()
+    logger.add(smk.log.loguru)
+
     # TODO Enable logging for subprocesses if needed
-    # # Generate DAG as SVG via graphviz
     # logger.debug("Generating DAG SVG using Snakemake")
     # with (
     #     open(smk.log.stdout, "a") as stdout_log,
     #     open(smk.log.stderr, "a") as stderr_log
     # ):
     #
-    #     dag_dot = subprocess.run(
+    #     subprocess.run(
     #         # TODO Fill in command if applicable,
     #         check=True,
     #         text=True,
-    #         stdout=subprocess.PIPE,
+    #         stdout=stdout_log,
     #         stderr=stderr_log,
-    #     ).stdout
+    #     )
 
 
 if __name__ == "__main__":

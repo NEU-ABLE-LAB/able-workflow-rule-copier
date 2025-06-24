@@ -5,4 +5,4 @@
 ./hooks/pyproject2conda.py pyproject.toml
 
 # Update the conda environment
-conda env update --name able-workflow-rule-copier-dev --file environment-py312-dev.yaml --prune
+conda env update --name able-workflow-rule-copier --file environment-py312-dev.yaml --prune

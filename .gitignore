@@ -18,6 +18,10 @@
 # Ansible lint stuff
 .ansible
 
+# Winmerge
+*.bak
+*:Zone.Identifier
+
 # --- General Python stuff ---------------------------------------------------
 
 # Mac OS-specific storage files

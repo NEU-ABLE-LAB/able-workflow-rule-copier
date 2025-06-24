@@ -1,0 +1,27 @@
+"""Integration tests for {{ rule_name }}."""
+
+import shutil
+from pathlib import Path
+
+import pytest
+
+from .conftest import _snakemake
+
+
+# --- Fixtures ---------------------------------------------------------------
+@pytest.fixture(autouse=True)
+def create_dummy_input_data(
+    workspace: Path,
+    request: pytest.FixtureRequest,
+):
+    """Copy the test data to the test workspace."""
+
+    repo_root = request.config.rootdir
+    shutil.copytree(repo_root / "data/tests", workspace / "data")
+
+
+# --- Tests ------------------------------------------------------------------
+def test_rule_{{ rule_name }}(workspace: Path) -> None:
+    _snakemake(workspace, ["{{ rule_name }}"])
+
+    # Confirm output files exist as expected.

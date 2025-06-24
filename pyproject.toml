@@ -31,17 +31,16 @@ docs = [
   "lxml>=5.4.0",
   "mike>=2.1.3",
   "mkdocs>=1.6.1",
-  "mkdocs-asciinema-player>=0.17.0",
-  "mkdocs-material>=9.6.14",
+  "mkdocs-include-markdown-plugin>=7.1.6",
   "mkdocs-inline-select-svg-plugin>=0.1.0",
   "mkdocs-jupyter>=0.25.1",
   "mkdocs-gen-files>=0.5.0",
   "mkdocs-git-revision-date-localized-plugin>=1.2.9",
   "mkdocs-literate-nav>=0.6.2",
   "mkdocs-macros-plugin>=1.3.7",
+  "mkdocs-material>=9.6.14",
   "mkdocs-mermaid2-plugin>=1.2.1",
   "mkdocs-section-index>=0.3.10",
-  "mkdocs-typer2>=0.1.5",
   "mkdocstrings-python>=1.16.10",
   "notebook>=7.4.2",
   "pymdown-extensions>=10.15",
@@ -148,7 +147,6 @@ template_python = "environment-py{py}-{env}"
 [tool.pyproject2conda.dependencies]
 copier-templates-extensions = { pip = true }
 jinja2-jsonschema = { pip = true }
-mkdocs-asciinema-player = { pip = true }
 mkdocs-inline-select-svg-plugin = { pip = true }
 mkdocs-mermaid2-plugin = { pip = true }
 mkdocs-section-index = { pip = true }
@@ -163,8 +161,9 @@ python = "highest"
 extras_or_groups = ["dev"]
 
 [tool.pytest.ini_options]
+# These tests should be able to run in the dev environment
 testpaths = [
-  "tests/",
+  "tests",
 ]
 # Help with module resolution and avoids some common import errors.
 addopts = "--import-mode=importlib"

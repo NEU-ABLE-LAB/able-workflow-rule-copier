@@ -44,14 +44,14 @@ spec.loader.exec_module(module_under_test)  # type: ignore[no-untyped-call]
 #  under test succeeds even when the real Snakemake package is absent.
 # --------------------------------------------------------------------------- #
 
-_fake_sm = types.ModuleType("snakemake")
-_fake_sm_script = types.ModuleType("snakemake.script")
+_fake_sm_module = types.ModuleType("snakemake")
+_fake_sm_script_module = types.ModuleType("snakemake.script")
 # The script only references the *name* `snakemake` when run as __main__,
 # so an empty namespace placeholder is sufficient:
-_fake_sm_script.snakemake = SimpleNamespace()
-_fake_sm.script = _fake_sm_script
-sys.modules.setdefault("snakemake", _fake_sm)
-sys.modules.setdefault("snakemake.script", _fake_sm_script)
+_fake_sm_script_module.snakemake = SimpleNamespace()
+_fake_sm_module.script = _fake_sm_script_module
+sys.modules.setdefault("snakemake", _fake_sm_module)
+sys.modules.setdefault("snakemake.script", _fake_sm_script_module)
 
 
 # --------------------------------------------------------------------------- #

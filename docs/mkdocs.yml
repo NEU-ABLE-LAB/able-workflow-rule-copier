@@ -4,7 +4,7 @@ site_name: ABLE Workflow Rule Copier
 site_author: Michael Kane
 docs_dir: docs
 repo_name: "NEU-ABLE-LAB/able-workflow-rule-copier-dev/"
-repo_url: "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev/"
+repo_url: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_REPO", "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier"]
 edit_uri: edit/main/docs/docs  # enables “Edit on GitHub”
 dev_addr: '127.0.0.1:8004'
 
@@ -47,6 +47,7 @@ theme:
     - content.code.copy
     - content.code.select
     - navigation.sections
+    - navigation.tabs
     - navigation.top
     - search.suggest
     - search.highlight
@@ -55,12 +56,23 @@ theme:
   favicon: _images/logo.png
 
 extra:
+  able_workflow_copier_repo: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_COPIER_REPO", "https://github.com/NEU-ABLE-LAB/able-workflow-copier"]
+  able_workflow_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-copier"]
+  able_workflow_module_copier_repo: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_MODULE_COPIER_REPO", "https://github.com/NEU-ABLE-LAB/able-workflow-module-copier"]
+  able_workflow_module_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_MODULE_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-module-copier"]
+  able_workflow_etl_copier_repo: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_ETL_COPIER_DOCS", "https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier"]
+  able_workflow_etl_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_ETL_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-etl-copier"]
+  able_workflow_rule_copier_repo: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_DOCS", "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier"]
+  able_workflow_rule_copier_docs: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_DOCS", "https://NEU-ABLE-LAB.github.io/able-workflow-rule-copier"]
   version:
     provider: mike
 
 plugins:
-  - asciinema-player
+  - gen-files:
+      scripts:
+        - _gen-files-scripts/render_summaries.py
   - git-revision-date-localized
+  - include-markdown
   - inline-select-svg
   - literate-nav:
       nav_file: SUMMARY.md
@@ -70,8 +82,6 @@ plugins:
   - mike
   - mkdocs-jupyter:
       include_source: false
-  - mkdocs-typer2:
-      pretty: true
   - mkdocstrings:
       handlers:
         python:

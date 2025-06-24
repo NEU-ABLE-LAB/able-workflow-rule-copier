@@ -8,13 +8,12 @@ A [copier](https://copier.readthedocs.io/en/stable/) template for generating a s
 
 This template assumes that you have already created an [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev) project and have optionally created a [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev) module and [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev) ETL process.
 
-
 ## Overview of ABLE Workflow copier templates
 
-- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev)
-- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier-dev)
-- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier-dev)
-- [`able-workflow-rule-rule-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev)
+- [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier)
+- [`able-workflow-module-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-module-copier)
+- [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier)
+- [`able-workflow-rule-rule-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier)
 
 ## Contributing
 
