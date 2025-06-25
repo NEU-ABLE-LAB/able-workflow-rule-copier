@@ -6,7 +6,7 @@ The test environments are managed with `tox`.
 
 ### Validating template generation
 
-This template is to be run in a project that was created with [`able-workflow-copier`]({{ able_workflow_copier_docs }}). To test the rendering of this template, that parent template needs to also be rendered. The version of this template that is used for tests is specified in the header of `scripts/pull_able_workflow_copier.py`.
+This template is to be run in a project that was created with [`able-workflow-copier`]({{ able_workflow_copier_docs }}). To test the rendering of this template, that parent template needs to also be rendered. The version of the parent template that are used for tests is specified in `.github/workflows/pr.yml` and pulled in `scripts/pull_able_workflow_copier.py`.
 
 !!! note "Updating `able-workflow-copier` version"
 
