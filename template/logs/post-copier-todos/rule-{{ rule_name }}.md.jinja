@@ -1,13 +1,5 @@
+# Post Copier To-Do's for Rule {{ rule_name }}
 
-# Post-Copy Checklist
-
-Copy-paste the markdown below into a github issue for what should be done after you create a rule template.
-
-- TODO-copier-package Render this jinja with copier into a directory that is git ignored so the user can copy-paste the rendered template as an issue.
-
-{% raw %}
-
-```markdown
 This issue is for tracking the development of a rule that was copied from the `able-workflow-rule-copier` template.
 
 ## Next steps
@@ -41,6 +33,3 @@ This issue is for tracking the development of a rule that was copied from the `a
      - `tox -e py312-workflow-rules`
 5. [ ] Update documentation in `docs/docs/contributing/templates/rule-{{ rule_name }}.md` on how to use rule or expected output.
 6. [ ] Run the `logs_to_watch` rule and update the `"logViewer.watch"` section of `.vscode/settings.json` with the results found in `logs/rules/logs_to_watch.log`.
-```
-
-{% endraw %}
