@@ -14,4 +14,4 @@ If this template has been updated and you would like to apply those updates to y
 copier update --trust --answers-file ".copier-answers/rule-{{ rule_name }}.yml" ./
 ```
 
-{% endrwaw %}
+{% endraw %}
