@@ -102,3 +102,11 @@ _tasks:
       "{{ _copier_conf.src_path }}/tasks/append_smk_include.py",
       "{{ smk_file_name }}"
     ]
+
+_message_after_copy: |
+  The rule "{{ rule_name }}" has been created successfully.
+
+  See `logs/post-copier-todos/rule-{{ rule_name }}.md` for next steps on
+  implementing your rule into the project. You can copy-paste the contents
+  of that file into a GitHub issue or a project management tool to track
+  the implementation of the rule.
