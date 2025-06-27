@@ -89,7 +89,14 @@ conda_env_key:
 _answers_file: >-
   ./copier-answers/rule-{{ rule_name }}.yml
 
-parent_project_tpl: "{{ parent_project_tpl_answers_file }}"
+_external_data:
+  parent_projec_tpl: "{{ parent_project_tpl_answers_file }}"
+
+package_name:
+  type: str
+  help: "The name of the project."
+  default: "{{ _external_data.parent_projec_tpl.package_name }}"
+  when: False
 
 _skip_if_exists:
   - "workflow/rules/includes.smk"
