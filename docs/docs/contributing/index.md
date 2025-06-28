@@ -1,4 +1,4 @@
-# Contributing to ABLE WOrkflow Rule Copier
+# Contributing to ABLE Workflow Rule Copier
 
 ## Tests
 

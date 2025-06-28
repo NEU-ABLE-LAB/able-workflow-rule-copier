@@ -15,31 +15,16 @@ This template assumes that you have already created an [`able-workflow-copier`](
 - [`able-workflow-etl-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-etl-copier)
 - [`able-workflow-rule-rule-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier)
 
-## Contributing
+## Quick-Start
 
-### Environment configuration
+This assumes you are already working within a project created by [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier).
 
-See the environment configuration [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev).
+### Configure Conda Environment
 
-1. Create a development environment with conda
+Use the conda environment already created to copy the project template.
 
-   ```bash
-   # Create the environment (or update and prune if it already exists)
-   conda env update --name able-workflow-rule-copier-dev --file environment-py312-dev.yaml --prune
-   ```
+### Generate a rule with the template
 
-   Alternatively, run the script `scripts/conda_update.sh`.
-
-   Then activate
-
-   ```bash
-   conda activate able-workflow-rule-copier-dev
-   ```
-
-   Configure the `able-workflow-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
-
-2. Install pre-commit into the repo to run checks on every commit
-
-   ```bash
-   (able-workflow-rule-copier) pre-commit install
-   ```
+```bash
+copier copy --trust https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier.git ./
+```
