@@ -1,5 +1,13 @@
 rule {{ rule_name }}:
-    """{{ rule_description }}"""
+    """
+    {{ rule_description }}
+
+    input:
+        readme: A dummy file for this template rule.
+
+    output:
+        Describe the expected output files for this rule.
+    """
     localrule: True
     input:
         # TODO: Define input files if needed. All inputs should be named.
