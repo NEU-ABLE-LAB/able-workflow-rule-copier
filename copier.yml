@@ -85,7 +85,16 @@ conda_env_key:
     {% endif %}
   when: "{{ uses_conda }}"
 
-# TODO-copier-rule Assign env_name and validate against workflow config files/schemas
+format_code:
+  type: bool
+  help: >-
+    Whether to format the generated code after generation.
+    You must have `black`, `ruff`, and `snakefmt` installed
+    in your conda environment for this to work.
+    If you do not run this, you will need to run
+    `black`, `ruff`, and `snakefmt` manually
+    after running `copier` in order for lint tests to pass.
+  default: true
 
 # --- Post-configuration -----------------------------------------------------
 
@@ -112,6 +121,17 @@ _tasks:
       "{{ _copier_conf.src_path }}/tasks/append_smk_include.py",
       "{{ smk_file_name }}"
     ]
+  # Run black, ruff, and snakefmt to format the code to fix line wraps
+  # depending on length of generated code.
+  - command: >-
+      black ./
+    when: "{{ format_code }}"
+  - command: >-
+      ruff check --fix ./
+    when: "{{ format_code }}"
+  - command: >-
+      snakefmt --config snakefmt.toml workflow/
+    when: "{{ format_code }}"
 
 _message_after_copy: |
   The rule "{{ rule_name }}" has been created successfully.
