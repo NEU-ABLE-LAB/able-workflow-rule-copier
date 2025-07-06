@@ -1,26 +1,32 @@
 """
 Script for the {{ rule_name }} rule
 
-{{ rule_description}}
+{{ rule_description }}
 """
 
 import sys
 from typing import TYPE_CHECKING
 
 from loguru import logger
+import typer
 
 if TYPE_CHECKING:  # pragma: no cover
     from snakemake.script import snakemake
 
 
-def main(smk) -> None:  # type: ignore[no-untyped-def]
+###############################################################################
+# Internal implementation (expects a Snakemake object)                        #
+###############################################################################
+
+
+def main_smk(smk) -> None:  # type: ignore[no-untyped-def]
 
     # Setup logging
     logger.remove()
     logger.add(smk.log.loguru)
 
     # TODO Read snakemake `input:` entries as
-    # smk.input.<INPUT_NANME> as needed
+    # smk.input.<INPUT_NAME> as needed
 
     # TODO Read snakemake `output:` entries as
     # smk.output.<OUTPUT_NAME> as needed
@@ -34,6 +40,18 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
     # Setup loguru logging
     logger.remove()
     logger.add(smk.log.loguru)
+
+    # Pass any specific arguments to the script
+    # For example, if the script expects a readme file:
+    # readme_path = smk.input.readme
+    main()
+
+
+def main() -> None:
+    """
+    If the script is executed as part of a Snakemake workflow, forward to
+    ``main_smk``. Otherwise emit a helpful error.
+    """
 
     # TODO Enable logging for subprocesses if needed
     # logger.debug("Generating DAG SVG using Snakemake")
@@ -53,7 +71,7 @@ def main(smk) -> None:  # type: ignore[no-untyped-def]
 
 if __name__ == "__main__":
     try:
-        main(snakemake)
+        main_smk(snakemake)
     except NameError:
         logger.error(
             "This script is designed to be run as part of a Snakemake workflow. "

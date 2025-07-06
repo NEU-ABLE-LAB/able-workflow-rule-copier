@@ -1,57 +1,39 @@
-"""
-Unit-tests for {{ rule_name }}.
-
-{{ rule_description }}
-"""
-
 from __future__ import annotations
 
 import importlib.util
-import sys
-import types
 from pathlib import Path
-from types import SimpleNamespace
+from typing import Any
 
 import pytest
+from snakemake.io import InputFiles, OutputFiles, Log, Params, Resources, Wildcards
+from snakemake.script import Snakemake
 
 # --------------------------------------------------------------------------- #
-# Load the script under test                                                  #
+# Load the script under test once per module                                  #
 # --------------------------------------------------------------------------- #
 
-ROOT = Path(__file__).parents[4]  # project root
-{%- if uses_conda %}
-SCRIPT = ROOT / "workflow/scripts/rules_conda_{{ conda_env_key }}/{{ rule_name }}.py"
-{% else %}
-SCRIPT = ROOT / "workflow/scripts/rules_global/{{ rule_name }}.py"
-{% endif -%}
 
-if not SCRIPT.exists():  # pragma: no cover
-    pytest.skip(
-        f"Cannot find {SCRIPT} - are you running tests from the repo root?",
-        allow_module_level=True,
-    )
+@pytest.fixture(scope="module")
+def module_under_test() -> Any:
+    """Import the runtime module object for {{ rule_name }}.py."""
+    root = Path(__file__).parents[4]  # project root
+    {% if uses_conda -%}
+    script = root / "workflow/scripts/rules_conda_{{ conda_env_key }}/{{ rule_name }}.py"
+    {% else -%}
+    script = root / "workflow/scripts/rules_global/{{ rule_name }}.py"
+    {% endif %}
 
-spec = importlib.util.spec_from_file_location("{{ rule_name }}", str(SCRIPT))
-if spec is None or spec.loader is None:  # pragma: no cover
-    pytest.skip(f"Cannot import {SCRIPT}", allow_module_level=True)
+    if not script.exists():  # pragma: no cover
+        pytest.skip(
+            f"Cannot find {script} - are you running tests from the repo root?",
+            allow_module_level=True,
+        )
 
-module_under_test = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module_under_test)  # type: ignore[no-untyped-call]
-
-# --------------------------------------------------------------------------- #
-#  Inject a stub “snakemake” module so that the unconditional
-#  “from snakemake.script import snakemake” import inside the script
-#  under test succeeds even when the real Snakemake package is absent.
-# --------------------------------------------------------------------------- #
-
-_fake_sm_module = types.ModuleType("snakemake")
-_fake_sm_script_module = types.ModuleType("snakemake.script")
-# The script only references the *name* `snakemake` when run as __main__,
-# so an empty namespace placeholder is sufficient:
-_fake_sm_script_module.snakemake = SimpleNamespace()
-_fake_sm_module.script = _fake_sm_script_module
-sys.modules.setdefault("snakemake", _fake_sm_module)
-sys.modules.setdefault("snakemake.script", _fake_sm_script_module)
+    spec = importlib.util.spec_from_file_location("{{ rule_name }}", str(script))
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
+    assert spec and spec.loader
+    spec.loader.exec_module(module)  # type: ignore[arg-type]
+    return module
 
 
 # --------------------------------------------------------------------------- #
@@ -59,27 +41,34 @@ sys.modules.setdefault("snakemake.script", _fake_sm_script_module)
 # --------------------------------------------------------------------------- #
 
 
-def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
+def _build_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
     """
-    Return a *snakemake* stand-in with the attrs required by ``main()``.
+    Construct a *real* Snakemake object with only the attributes required
+    by ``main_smk``.
     """
+    readme_path = tmp_path / "README.md"
+    readme_path.touch()
 
-    smk = SimpleNamespace(
-        input=SimpleNamespace(
-            readme=tmp_path / "README.md",
+    log_dir = tmp_path / "logs"
+    log_dir.mkdir(parents=True, exist_ok=True)
+
+    return Snakemake(
+        input_=InputFiles(fromdict={"readme": str(readme_path)}),
+        output=OutputFiles(),
+        params=Params(),
+        wildcards=Wildcards(),
+        resources=Resources(),
+        threads=1,
+        log=Log(
+            fromdict={
+                "stderr": str(log_dir / "stderr.log"),
+                "loguru": str(log_dir / "loguru.log"),
+            }
         ),
-        log=SimpleNamespace(
-            loguru=tmp_path / "logs" / "conda_localize.log",
-            stdout=tmp_path / "logs" / "stdout.log",
-            stderr=tmp_path / "logs" / "stderr.log",
-        ),
+        config={},
+        rulename="{{ rule_name }}_test",
+        bench_iteration=None,
     )
-
-    # Create dummy directories and files
-    smk.input.readme.touch()
-    smk.log.loguru.parent.mkdir(parents=True, exist_ok=True)
-
-    return smk
 
 
 # --------------------------------------------------------------------------- #
@@ -87,7 +76,7 @@ def _fake_snakemake(tmp_path: Path) -> SimpleNamespace:
 # --------------------------------------------------------------------------- #
 
 
-def test_main_runs(tmp_path):
-    """A stand-in test for the main() function."""
-    smk = _fake_snakemake(tmp_path)
-    module_under_test.main(smk)
+def test_main_smk_runs(tmp_path, module_under_test):
+    """Smoke-test that ``main_smk`` executes without error."""
+    smk = _build_snakemake(tmp_path)
+    module_under_test.main_smk(smk)  # type: ignore[attr-defined]
