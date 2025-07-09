@@ -19,10 +19,6 @@ def main_smk(smk) -> None:  # type: ignore[no-untyped-def]
     Main entry point for the Snakemake script.
     """
 
-    # Setup logging
-    logger.remove()
-    logger.add(smk.log.loguru)
-
     # TODO Read snakemake `input:` entries as
     # smk.input.<INPUT_NAME> as needed
 
