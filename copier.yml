@@ -33,6 +33,7 @@ rule_description:
 uses_package:
   type: bool
   help: "Whether the rule uses the project's python package or not."
+  default: False
   when: False
 
 module_type:
