@@ -14,12 +14,10 @@ if TYPE_CHECKING:  # pragma: no cover
     from snakemake.script import snakemake
 
 
-###############################################################################
-# Internal implementation (expects a Snakemake object)                        #
-###############################################################################
-
-
 def main_smk(smk) -> None:  # type: ignore[no-untyped-def]
+    """
+    Main entry point for the Snakemake script.
+    """
 
     # Setup logging
     logger.remove()
