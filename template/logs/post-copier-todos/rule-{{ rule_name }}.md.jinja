@@ -16,9 +16,9 @@ This issue is for tracking the development of a rule that was copied from the `a
    2. [ ] Fill in the rule logic within main().
    3. [ ] Confirm typecheck and lint checks pass with the following commands
      - `tox -e py312-typecheck-core`
-     - `tox -e py312-lint-core`
+     - `tox -e py312-lint`
 3. [ ] `test/workflow/scripts/{% if not uses_conda %}rules_global{% else %}rules_conda_{{ conda_env_key }}{% endif %}{{ _copier_conf.sep }}test_{{ rule_name }}.py.jinja`
-   1. [ ] Update the `SimpleNamespace()` parameters of `_fake_snakemake()` with the structure to match the `input:`, `output:`, `wildcards:` and `params:` directives provided by the rule under test.
+   1. [ ] Update the `Snakemake()` parameters of `_build_snakemake()` with the structure to match the `input:`, `output:`, `wildcards:` and `params:` directives provided by the rule under test.
    2. [ ] Provide dummy or tiny subsets of data for tests in the appropriate location under `data/tests/`.
    3. [ ] Replace `test_main_runs()` with the desired test logic for the script under test.
    4. [ ] Confim tests pass with one of the following commands depending on the conda environment needed to run the test.
