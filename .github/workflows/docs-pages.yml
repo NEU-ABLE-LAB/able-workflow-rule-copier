@@ -1,4 +1,5 @@
 name: docs-pages
+
 on:
   push:
     branches: [main]
@@ -9,21 +10,43 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
-  build:
-    if: ${{ github.event.repository.private == false }}   # ← public-only
-    runs-on: ubuntu-latest
-    permissions: {contents: read}          # adjust as needed
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      with: {python-version: "3.x"}
-    - run: pip install mkdocs-material mike
-    - run: mike deploy --branch temp --deploy-prefix '' .
-    - uses: actions/upload-pages-artifact@v3
-      with: {path: site}
 
-  deploy:
-    if: ${{ github.event.repository.private == false }}   # ← public-only
-    needs: build
-    permissions: {pages: write, id-token: write}
-    uses: actions/deploy-pages@v4
+  build-and-deploy:
+
+    # Don't deploy on forks
+    if: ${{ github.repository == 'NEU-ABLE-LAB/able-workflow-rule-copier' }}
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: able-workflow-rule-copier
+          channels: conda-forge, bioconda
+          channel-priority: strict
+          conda-remove-defaults: "true"
+          environment-file: environment-py312-dev.yaml
+          miniforge-version: latest
+
+      - run: |
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
+          VER=${GITHUB_REF_NAME:-dev}
+          mike deploy \
+            --config-file docs/mkdocs.yml \
+            --branch gh-pages \
+            --update-aliases \
+            --push \
+            "$VER" \
+            latest
+          mike set-default --push latest
+
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: site}
