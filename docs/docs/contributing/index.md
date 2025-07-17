@@ -10,7 +10,7 @@ This template is to be run in a project that was created with [`able-workflow-co
 
 !!! note "Updating `able-workflow-copier` version"
 
-    Once `scripts/sandbox_examples_generate.py` or `tests/template/conftest.py` create the local copy of the `able-workflow-copier` repo in the `sandbox/` they do not check to see if it needs updating. To ensure that the local and cloud repos are in sync, regularly run `rm -rf sandbox/able-workflow-copier-dev`
+    Once `scripts/sandbox_examples_generate.py` or `tests/template/conftest.py` create the local copy of the `able-workflow-copier` repo in the `sandbox/` they do not check to see if it needs updating. To ensure that the local and cloud repos are in sync, regularly run `rm -rf sandbox/able-workflow-copier`
 
 Example Copier answers are provided in the `answers/` directory. The followign command runs the tests for these examples:
 

@@ -5,7 +5,7 @@ Render *extra-answers* YAML files into “sandbox examples” **without** pytest
 Each Example consists of two independent copier templates that will be applied
 in a parent-then-child order:
 
-1.  **Package** template  →  able-workflow-copier-dev
+1.  **Package** template  →  able-workflow-copier
 2.  **Rule**   template  →  this repository's root
 
 For every example we

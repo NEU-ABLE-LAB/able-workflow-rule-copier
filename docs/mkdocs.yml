@@ -3,7 +3,7 @@
 site_name: ABLE Workflow Rule Copier
 site_author: Michael Kane
 docs_dir: docs
-repo_name: "NEU-ABLE-LAB/able-workflow-rule-copier-dev/"
+repo_name: "NEU-ABLE-LAB/able-workflow-rule-copier/"
 repo_url: !!python/object/apply:os.getenv ["ABLE_WORKFLOW_RULE_COPIER_REPO", "https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier"]
 edit_uri: edit/main/docs/docs  # enables “Edit on GitHub”
 dev_addr: '127.0.0.1:8004'

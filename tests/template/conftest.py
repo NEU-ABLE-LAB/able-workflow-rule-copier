@@ -5,7 +5,7 @@ implemented in `scripts/sandbox_examples_generate.py`.
 For each directory under `example-answers/<name>/` containing
   • `package.yml` - answers for the *package* template
   • `rule.yml`    - answers for the *rule*   template
-we first render the package template (able-workflow-copier-dev),
+we first render the package template (able-workflow-copier),
 then render this repository's rule template with
 ``parent_result`` pointing to the package output.
 
