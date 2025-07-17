@@ -1,0 +1,29 @@
+name: docs-pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+    group: docs
+    cancel-in-progress: true
+
+jobs:
+  build:
+    if: ${{ github.event.repository.private == false }}   # ← public-only
+    runs-on: ubuntu-latest
+    permissions: {contents: read}          # adjust as needed
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with: {python-version: "3.x"}
+    - run: pip install mkdocs-material mike
+    - run: mike deploy --branch temp --deploy-prefix '' .
+    - uses: actions/upload-pages-artifact@v3
+      with: {path: site}
+
+  deploy:
+    if: ${{ github.event.repository.private == false }}   # ← public-only
+    needs: build
+    permissions: {pages: write, id-token: write}
+    uses: actions/deploy-pages@v4
