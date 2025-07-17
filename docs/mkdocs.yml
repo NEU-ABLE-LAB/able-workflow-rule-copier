@@ -79,7 +79,10 @@ plugins:
       implicit_index: true
       tab_length: 2
   - macros
-  - mike
+  - mike:
+      version_selector: true
+      css_dir: _css
+      javascript_dir: _js
   - mkdocs-jupyter:
       include_source: false
   - mkdocstrings:
