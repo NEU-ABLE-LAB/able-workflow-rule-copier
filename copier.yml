@@ -1,0 +1,144 @@
+# --- Configuration ----------------------------------------------------------
+_jinja_extensions:
+  - "copier_templates_extensions.TemplateExtensionLoader"
+  - "extensions/strict_undefined.py:SetStrictUndefined"
+
+_subdirectory: "template"
+
+# --- Questions --------------------------------------------------------------
+
+parent_project_tpl_answers_file:
+  type: str
+  help: "The path to the parent package template file."
+  default: ".copier-answers/project.yml"
+  when: False
+
+rule_name:
+  type: str
+  help: "The name of the rule to be created."
+  validator: >-
+    {% if not (rule_name | regex_search('^[a-zA-Z_][a-zA-Z0-9_]*$')) %}
+      The rule name must start with a letter or underscore and can only contain letters, numbers, and underscores.
+    {% endif %}
+
+rule_description:
+  type: str
+  help: "A short description of the rule to be created."
+  validator: >-
+    {% if not (rule_description | length > 0) %}
+      The rule description must not be empty.
+    {% endif %}
+
+# TODO-copier-rule consider if the rule should ever use the package, or whether the generic package will always be used.
+uses_package:
+  type: bool
+  help: "Whether the rule uses the project's python package or not."
+  default: False
+  when: False
+
+module_type:
+  type: str
+  help: "The type of module where the rule will be implemented. Select 'none' if the rule does not use a module."
+  default: "none"
+  choices:
+    - "datasets"
+    - "features"
+    - "models"
+    - "none"
+  when: "{{ uses_package }}"
+
+module_name:
+  type: str
+  help: "The name of the module where the rule will be implemented."
+  validator: >-
+    {% if not (module_name | regex_search('^[a-zA-Z_][a-zA-Z0-9_]*$')) %}
+      The module name must start with a letter or underscore and can only contain letters, numbers, and underscores.
+    {% endif %}
+  when: "{{ uses_package }}"
+  # TODO-copier-rule Validate against existing module names in the project.
+
+# TODO-copier-rule Implement ability to append to an existing smk file.
+# smk_file_exists:
+#   type: bool
+#   help: "Does the smk file you want to write this rule to already exist?"
+
+smk_file_name:
+  type: str
+  help: "The name of the smk file where the rule will be implemented."
+  validator: >-
+    {% if not (smk_file_name | regex_search('^[a-zA-Z_][a-zA-Z0-9_\-]*\\.smk$')) %}
+      The smk file name must start with a letter or underscore, can only contain letters, numbers, hyphens, and underscores, and must end with '.smk'.
+    {% endif %}
+  default: "{{ rule_name }}.smk"
+  # when: "{{ not smk_file_exists }}"
+
+uses_conda:
+  type: bool
+  help: "Whether the rule uses a conda environment or not."
+  default: True
+
+conda_env_key:
+  type: str
+  help: "The key for the conda environment in the workflow config file."
+  default: "ENV_NAME"
+  validator: >-
+    {% if not (conda_env_key | regex_search('^[a-zA-Z_][a-zA-Z0-9_]*$')) %}
+      The conda environment key must start with a letter or underscore and can only contain letters, numbers, and underscores.
+    {% endif %}
+  when: "{{ uses_conda }}"
+
+format_code:
+  type: bool
+  help: >-
+    Whether to format the generated code after generation.
+    You must have `black`, `ruff`, and `snakefmt` installed
+    in your conda environment for this to work.
+    If you do not run this, you will need to run
+    `black`, `ruff`, and `snakefmt` manually
+    after running `copier` in order for lint tests to pass.
+  default: true
+
+# --- Post-configuration -----------------------------------------------------
+
+_answers_file: >-
+  ./copier-answers/rule-{{ rule_name }}.yml
+
+_external_data:
+  parent_projec_tpl: "{{ parent_project_tpl_answers_file }}"
+
+package_name:
+  type: str
+  help: "The name of the project."
+  default: "{{ _external_data.parent_projec_tpl.package_name }}"
+  when: False
+
+_skip_if_exists:
+  - "workflow/rules/includes.smk"
+
+# Post-generation tasks
+_tasks:
+  # Add the rule to the workflow includes file
+  - command: [
+      "{{ _copier_python }}",
+      "{{ _copier_conf.src_path }}/tasks/append_smk_include.py",
+      "{{ smk_file_name }}"
+    ]
+  # Run black, ruff, and snakefmt to format the code to fix line wraps
+  # depending on length of generated code.
+  - command: >-
+      black ./
+    when: "{{ format_code }}"
+  - command: >-
+      ruff check --fix ./
+    when: "{{ format_code }}"
+  - command: >-
+      snakefmt --config snakefmt.toml workflow/
+    when: "{{ format_code }}"
+
+_message_after_copy: |
+  The rule "{{ rule_name }}" has been created successfully.
+
+  See `.copier-answers/post-copier-todos/rule-{{ rule_name }}.md` for next steps on
+  implementing your rule into the project. You can copy-paste the contents
+  of that file into a GitHub issue or a project management tool to track
+  the implementation of the rule.

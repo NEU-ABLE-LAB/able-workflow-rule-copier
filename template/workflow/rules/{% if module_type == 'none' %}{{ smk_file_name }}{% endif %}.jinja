@@ -1,0 +1,34 @@
+rule {{ rule_name }}:
+    """
+    {{ rule_description }}
+
+    input:
+        readme: A dummy file for this template rule.
+
+    output:
+        Describe the expected output files for this rule.
+    """
+    localrule: True
+    input:
+        # TODO: Define input files if needed. All inputs should be named.
+        readme="data/README.md",
+    # output:
+    # TODO: Define output files if needed. All outputs should be named.
+    # wildcards:
+    # TODO: Add wildcards if needed. All wildcards should be named.
+    log:
+        loguru=str(LOG_DIR / "{{ rule_name }}" / "loguru.log"),
+        stdout=str(LOG_DIR / "{{ rule_name }}" / "stdout.log"),
+        stderr=str(LOG_DIR / "{{ rule_name }}" / "stderr.log"),
+    {% if uses_conda -%}
+    conda:
+        get_localized_conda(config["CONDA"]["ENVS"]["{{ conda_env_key }}"])
+    {%- endif %}
+    # params:
+    # TODO: Define parameters if needed. All parameters should be named.
+    script:
+        {% if uses_conda -%}
+            str(WORKFLOW_BASE / "scripts/rules_conda_{{ conda_env_key }}/{{ rule_name }}.py")
+        {%- else %}
+            str(WORKFLOW_BASE / "scripts/rules_global/{{ rule_name }}.py")
+        {%- endif %}
