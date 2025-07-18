@@ -93,7 +93,10 @@ def _run_copie_with_output_control(config, copie_session, answers):
                 result = copie_session.copy(extra_answers=answers)
             finally:
                 sys.stdout, sys.stderr = old_stdout, old_stderr
-    return result
+        return result
+    else:
+        # Run without output suppression for verbose modes
+        return copie_session.copy(extra_answers=answers)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -192,8 +195,6 @@ def rendered(request):
     rule_result = _run_copie_with_output_control(
         request.config, rule_copie, example.rule_answers
     )
-
-    rule_result = rule_copie.copy(extra_answers=example.rule_answers)
 
     # Smoke test the rule template
     if rule_result.exit_code or rule_result.exception:
