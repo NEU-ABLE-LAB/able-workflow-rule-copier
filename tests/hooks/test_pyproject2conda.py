@@ -86,7 +86,7 @@ def test_generation_nonzero_propagates(monkeypatch, rc):
 
     monkeypatch.setattr(shutil, "which", lambda _: "/usr/bin/pyproject2conda")
 
-    def fake_run(cmd: List[str], check: bool = False):
+    def fake_run(cmd: list[str], check: bool = False):
         # First call is pyproject2conda → fail; subsequent calls should not happen.
         fake_run.calls += 1
         if fake_run.calls == 1:
