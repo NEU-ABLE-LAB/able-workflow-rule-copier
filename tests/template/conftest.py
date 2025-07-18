@@ -93,7 +93,10 @@ def _run_copie_with_output_control(config, copie_session, answers):
                 result = copie_session.copy(extra_answers=answers)
             finally:
                 sys.stdout, sys.stderr = old_stdout, old_stderr
-    return result
+        return result
+    else:
+        # Run without output suppression for verbose modes
+        return copie_session.copy(extra_answers=answers)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
