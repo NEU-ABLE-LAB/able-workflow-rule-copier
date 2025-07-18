@@ -196,8 +196,6 @@ def rendered(request):
         request.config, rule_copie, example.rule_answers
     )
 
-    rule_result = rule_copie.copy(extra_answers=example.rule_answers)
-
     # Smoke test the rule template
     if rule_result.exit_code or rule_result.exception:
         pytest.fail(f"Rule template failed for {example.name}: {rule_result.exception}")
