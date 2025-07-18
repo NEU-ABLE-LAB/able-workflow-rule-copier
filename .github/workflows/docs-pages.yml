@@ -52,7 +52,6 @@ jobs:
           mike set-default \
             --config-file docs/mkdocs.yml \
             --branch gh-pages \
-            --update-aliases \
             latest
 
       - name: Push changes
