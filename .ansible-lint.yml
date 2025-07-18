@@ -1,0 +1,6 @@
+# .ansible-lint.yml  (put at repo root)
+profile: min            # disables the big playbook rule-set
+enable_list: [yaml]     # run only the YAML rule
+skip_list:
+  - yaml[line-length]   # example: maybe you don’t want 80-column wrapping
+  - yaml[truthy]        # Copier often needs on/off strings
