@@ -61,6 +61,3 @@ jobs:
         if: ${{ github.repository == 'NEU-ABLE-LAB/able-workflow-rule-copier' }}
         run: |
           git push origin gh-pages
-
-      - uses: actions/upload-pages-artifact@v3
-        with: {path: site}
