@@ -38,7 +38,7 @@ def _yaml_getenv(loader, node):
 
 yaml.constructor.add_constructor(TAG, _yaml_getenv)
 
-mkdocs_cfg, *_ = load_mkdocs_config("docs/mkdocs.yml")
+mkdocs_cfg = load_mkdocs_config(str(MKDOCS_YML))
 ctx = mkdocs_cfg.get("extra", {})  # variables for Jinja
 
 
