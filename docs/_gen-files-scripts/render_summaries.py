@@ -14,7 +14,7 @@ from pathlib import Path
 
 import jinja2
 import mkdocs_gen_files as gen_files
-from mkdocs.config import load_mkdocs_config
+from mkdocs.config import load_config as load_mkdocs_config
 from ruamel.yaml import YAML
 
 # ---------------------------------------------------------------------
