@@ -3,6 +3,8 @@ name: docs-pages
 on:
   push:
     branches: [main]
+  release:
+    types: [published]
   workflow_dispatch:
 
 concurrency:
