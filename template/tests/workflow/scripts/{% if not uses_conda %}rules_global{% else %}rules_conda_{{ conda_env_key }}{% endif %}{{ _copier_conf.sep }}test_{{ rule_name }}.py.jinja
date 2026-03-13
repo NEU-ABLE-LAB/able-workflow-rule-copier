@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from snakemake.io import InputFiles, OutputFiles, Log, Params, Resources, Wildcards
+from snakemake.io import ResourceList as Resources
+from snakemake.io import InputFiles, OutputFiles, Log, Params, Wildcards
 from snakemake.script import Snakemake
 
 # --------------------------------------------------------------------------- #
