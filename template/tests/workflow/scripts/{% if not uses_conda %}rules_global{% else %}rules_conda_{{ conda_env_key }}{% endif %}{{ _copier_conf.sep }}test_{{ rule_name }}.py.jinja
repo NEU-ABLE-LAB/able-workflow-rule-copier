@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from snakemake.io import ResourceList as Resources
-from snakemake.io import InputFiles, OutputFiles, Log, Params, Wildcards
+from snakemake.io.container import InputFiles, OutputFiles, Log, Params, ResourceList, Wildcards
 from snakemake.script import Snakemake
 
 # --------------------------------------------------------------------------- #
@@ -58,7 +57,7 @@ def _build_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
         output=OutputFiles(),
         params=Params(),
         wildcards=Wildcards(),
-        resources=Resources(),
+        resources=ResourceList(),
         threads=1,
         log=Log(
             fromdict={
