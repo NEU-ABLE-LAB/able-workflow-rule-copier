@@ -81,21 +81,6 @@ def _assert_template_repo_is_clean(template_root: Path) -> None:
     )
 
 
-def _run_copy_silently(config, copie_session, answers, *, vcs_ref: str):
-    """Run copier with output suppression based on pytest verbosity.
-
-    This is a thin wrapper around the shared `_run_copie_with_output_control`
-    helper defined in `tests.template.conftest`, to avoid duplicating the
-    stdout/stderr suppression logic in multiple places.
-    """
-    return _run_copie_with_output_control(
-        config,
-        copie_session,
-        answers,
-        vcs_ref=vcs_ref,
-    )
-
-
 def _bootstrap_git_repo(path: Path) -> None:
     """
     Ensure *path* is a Git repo with one commit so that setuptools-scm can
@@ -181,7 +166,7 @@ def pytest_generate_tests(metafunc):
                 # Run the package template with output control
                 # to avoid cluttering the test output with copier's own logs.
                 # This is especially useful when running tests with `-v` or `-vv`.
-                pkg = _run_copy_silently(
+                pkg = _run_copie_with_output_control(
                     metafunc.config,
                     pkg_copie,
                     ex.package_answers,
@@ -201,7 +186,7 @@ def pytest_generate_tests(metafunc):
                 # Run the rule template with output control
                 # to avoid cluttering the test output with copier's own logs.
                 # This is especially useful when running tests with `-v` or `-vv`.
-                rule = _run_copy_silently(
+                rule = _run_copie_with_output_control(
                     metafunc.config,
                     rule_copie,
                     ex.rule_answers,
