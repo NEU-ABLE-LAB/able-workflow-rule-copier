@@ -6,11 +6,12 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 Initial commit to public `able-workflow-rule-copier` repository from `NEU-ABLE-LAB` private repository.
 
-## 0.1.1-dev
+## 0.1.1 - 2026-03-14
 
 ### Changed
 
 - **Breaking:** Require Snakemake v9.6.3+ for generated workflow-rule script tests because of `snakemake.io` API changes ([`51fcfbf`](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier-dev/commit/51fcfbf2d7194795b39f18696709859db64bf4eb)).
+- Docs are not hosted on github pages instead of thisismikekane.com domain
 
 ### Fixed
 
