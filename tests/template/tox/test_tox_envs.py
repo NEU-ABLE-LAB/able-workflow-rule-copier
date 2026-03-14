@@ -24,6 +24,7 @@ from tests.template.conftest import (
     _new_copie,
     TEMPLATE_PACKAGE_DIR,
     TEMPLATE_RULE_DIR,
+    _run_copie_with_output_control,
 )
 from tests.template.tox.conftest import _list_tox_envs
 
@@ -81,17 +82,18 @@ def _assert_template_repo_is_clean(template_root: Path) -> None:
 
 
 def _run_copy_silently(config, copie_session, answers, *, vcs_ref: str):
-    """Run copier with output suppression based on pytest verbosity."""
-    if config.option.verbose < 2:
-        with open(os.devnull, "w") as devnull:
-            old_stdout, old_stderr = sys.stdout, sys.stderr
-            sys.stdout, sys.stderr = devnull, devnull
-            try:
-                result = copie_session.copy(extra_answers=answers, vcs_ref=vcs_ref)
-            finally:
-                sys.stdout, sys.stderr = old_stdout, old_stderr
-        return result
-    return copie_session.copy(extra_answers=answers, vcs_ref=vcs_ref)
+    """Run copier with output suppression based on pytest verbosity.
+
+    This is a thin wrapper around the shared `_run_copie_with_output_control`
+    helper defined in `tests.template.conftest`, to avoid duplicating the
+    stdout/stderr suppression logic in multiple places.
+    """
+    return _run_copie_with_output_control(
+        config,
+        copie_session,
+        answers,
+        vcs_ref=vcs_ref,
+    )
 
 
 def _bootstrap_git_repo(path: Path) -> None:
