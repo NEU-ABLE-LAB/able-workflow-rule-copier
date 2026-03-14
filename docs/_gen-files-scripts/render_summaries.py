@@ -9,34 +9,17 @@ Requires:
   - jinja2
 """
 
-import os
 from pathlib import Path
 
 import jinja2
 import mkdocs_gen_files as gen_files
 from mkdocs.config import load_config as load_mkdocs_config
-from ruamel.yaml import YAML
 
 # ---------------------------------------------------------------------
-# 1.  Load mkdocs.yml with ruamel.yaml
+# 1.  Load mkdocs.yml conifguration
 # ---------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[2]  # repo root
 MKDOCS_YML = ROOT / "docs" / "mkdocs.yml"
-
-yaml = YAML(typ="safe")  # “safe” keeps built‑ins off by default
-
-
-# -- custom constructor for !!python/object/apply:os.getenv ------------
-TAG = "tag:yaml.org,2002:python/object/apply:os.getenv"
-
-
-def _yaml_getenv(loader, node):
-    """YAML constructor that expands !!python/object/apply:os.getenv."""
-    args = loader.construct_sequence(node)  # ["SITE_NAME", "Default"]
-    return os.getenv(*args)
-
-
-yaml.constructor.add_constructor(TAG, _yaml_getenv)
 
 mkdocs_cfg = load_mkdocs_config(str(MKDOCS_YML))
 ctx = mkdocs_cfg.get("extra", {})  # variables for Jinja

@@ -5,8 +5,28 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from snakemake.io import InputFiles, OutputFiles, Log, Params, Resources, Wildcards
 from snakemake.script import Snakemake
+
+try:
+    # Snakemake v9.17.0+ (with snakemake.io.container)
+    from snakemake.io.container import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
+except ImportError:
+    # Snakemake v9.16.3 fallback
+    from snakemake.io import (
+        InputFiles,
+        Log,
+        OutputFiles,
+        Params,
+        ResourceList,
+        Wildcards,
+    )
 
 # --------------------------------------------------------------------------- #
 # Load the script under test once per module                                  #
@@ -57,7 +77,7 @@ def _build_snakemake(tmp_path: Path) -> Snakemake:  # noqa: D401
         output=OutputFiles(),
         params=Params(),
         wildcards=Wildcards(),
-        resources=Resources(),
+        resources=ResourceList(),
         threads=1,
         log=Log(
             fromdict={
