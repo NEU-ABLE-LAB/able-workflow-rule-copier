@@ -83,7 +83,7 @@ def _prepare_single_example(
     tmp_path: Path,
     *,
     monkeypatch: pytest.MonkeyPatch,
-) -> (Any, Any):
+) -> tuple[Any, Any]:
     """Return ``(sentinel_path, example_name)`` for the synthetic example."""
     # 1. minimal YAML files expected by Example dataclass --------------------
     pkg_yml = tmp_path / "pkg.yml"
