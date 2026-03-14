@@ -15,6 +15,9 @@ jobs:
 
   build-and-deploy:
 
+    # Don't deploy on forks
+    if: ${{ github.repository == 'NEU-ABLE-LAB/able-workflow-rule-copier' }}
+
     runs-on: ubuntu-latest
 
     defaults:

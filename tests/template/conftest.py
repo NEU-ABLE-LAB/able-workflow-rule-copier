@@ -82,21 +82,31 @@ def _new_copie(
     )
 
 
-def _run_copie_with_output_control(config, copie_session, answers):
+def _run_copie_with_output_control(
+    config,
+    copie_session,
+    answers,
+    *,
+    vcs_ref: str | None = None,
+):
     """Run copie_session.copy with output suppression based on pytest verbosity."""
+    copy_kwargs = {"extra_answers": answers}
+    if vcs_ref is not None:
+        copy_kwargs["vcs_ref"] = vcs_ref
+
     # Only suppress output if verbosity < 2 (i.e., not -vv or higher)
     if config.option.verbose < 2:
         with open(os.devnull, "w") as devnull:
             old_stdout, old_stderr = sys.stdout, sys.stderr
             sys.stdout, sys.stderr = devnull, devnull
             try:
-                result = copie_session.copy(extra_answers=answers)
+                result = copie_session.copy(**copy_kwargs)
             finally:
                 sys.stdout, sys.stderr = old_stdout, old_stderr
         return result
     else:
         # Run without output suppression for verbose modes
-        return copie_session.copy(extra_answers=answers)
+        return copie_session.copy(**copy_kwargs)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
