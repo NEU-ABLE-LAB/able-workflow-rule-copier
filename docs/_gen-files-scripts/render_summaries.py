@@ -1,11 +1,12 @@
 """
 Render every SUMMARY.md under docs/docs/ with Jinja, using variables
-from docs/mkdocs.yml::extra.  The rendered content is written back to
-the same relative path *inside* MkDocs' virtual file system.
+from docs/mkdocs.yml::extra, loaded via MkDocs' config system. The
+rendered content is written back to the same relative path *inside*
+MkDocs' virtual file system.
 
 Requires:
+  - mkdocs
   - mkdocs-gen-files
-  - ruamel.yaml >= 0.18
   - jinja2
 """
 
@@ -16,7 +17,7 @@ import mkdocs_gen_files as gen_files
 from mkdocs.config import load_config as load_mkdocs_config
 
 # ---------------------------------------------------------------------
-# 1.  Load mkdocs.yml conifguration
+# 1.  Load mkdocs.yml configuration
 # ---------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[2]  # repo root
 MKDOCS_YML = ROOT / "docs" / "mkdocs.yml"
