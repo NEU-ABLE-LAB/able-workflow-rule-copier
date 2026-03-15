@@ -7,7 +7,7 @@ from typing import Any
 from loguru import logger
 from ruamel.yaml import YAML
 
-REPO_URL = "https://github.com/NEU-ABLE-LAB/able-workflow-copier-dev.git"
+REPO_URL = "https://github.com/NEU-ABLE-LAB/able-workflow-copier.git"
 PR_YML_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "pr.yml"
 
 
@@ -40,10 +40,10 @@ def get_commit_hash_from_pr_yml(pr_yml_path: Path) -> str:
 
 def ensure_package_template_repo(project_root: Path) -> Path:
     """
-    Guarantee that ``sandbox/able-workflow-copier-dev`` exists under *project_root*.
+    Guarantee that ``sandbox/able-workflow-copier`` exists under *project_root*.
     If it is missing, clone the repo, checkout the specific commit, and return the directory path.
     """
-    dest = (project_root / "sandbox" / "able-workflow-copier-dev").resolve()
+    dest = (project_root / "sandbox" / "able-workflow-copier").resolve()
     if dest.is_dir():
         logger.debug("Package template already exists at {}", dest)
         return dest
@@ -65,7 +65,7 @@ def ensure_package_template_repo(project_root: Path) -> Path:
             cwd=str(dest),
         )
         logger.success(
-            "✔ cloned able-workflow-copier-dev at commit {} → {}", commit_hash, dest
+            "✔ cloned able-workflow-copier at commit {} → {}", commit_hash, dest
         )
     except FileNotFoundError:  # git not installed
         raise RuntimeError(
