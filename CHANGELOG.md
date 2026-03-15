@@ -16,6 +16,8 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Removed
 
+- Duplicate `tox` install in `pr.yml`
+
 ### Fixed
 
 - Removed stray `-dev` suffix references by switching `scripts/pull_able_workflow_copier.py` to the public `able-workflow-copier` repository and sandbox path naming. (#30)
