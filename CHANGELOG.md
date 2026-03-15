@@ -2,7 +2,7 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
-## dev
+## v0.1.2 - 2026-03-15
 
 ### Changed
 
@@ -23,7 +23,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Corrected the ABLE Workflow docs navigation link in `docs/docs/SUMMARY.md` to point to `/latest/overview/`. (#30)
 - Use an explicit `env.CODECOV_TOKEN` guard and token wiring for both Codecov upload steps in `.github/workflows/main.yml` to avoid secret-resolution failures. (#30)
 
-## 0.1.1 - 2026-03-14
+## v0.1.1 - 2026-03-14
 
 ### Changed
 
@@ -39,6 +39,6 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 - Configure `git-revision-date-localized` with `locale: en` in MkDocs config.
 - Replace Ruff `exclude` with `extend-exclude` to keep lint configuration compatible with current Ruff behavior.
 
-## 0.1.0 - 2025-07-18
+## v0.1.0 - 2025-07-18
 
 Initial commit to public `able-workflow-rule-copier` repository from `NEU-ABLE-LAB` private repository.
