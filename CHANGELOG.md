@@ -2,6 +2,27 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## dev
+
+### Changed
+
+- Reworked docs publishing in `.github/workflows/docs-pages.yml` so pushes/manual runs deploy `dev`, releases deploy the tagged version, and `mike set-default` runs only for releases. (#30)
+- Updated `.github/workflows/pr.yml` to use public `NEU-ABLE-LAB/able-workflow-copier@v0.1.1`, added workflow concurrency controls, and removed private-token dependent nested-clone/Codecov steps. (#30)
+
+### Added
+
+- Added `.github/workflows/main.yml` to run tox on `main` (Python 3.11/3.12), generate coverage/test-result reports, and upload to Codecov when a token is available. (#30)
+- Added Codecov and `tox Main Tests` workflow badges to `README.md` and `docs/docs/index.md`. (#30)
+
+### Removed
+
+### Fixed
+
+- Removed stray `-dev` suffix references by switching `scripts/pull_able_workflow_copier.py` to the public `able-workflow-copier` repository and sandbox path naming. (#30)
+- Constrained MkDocs to `<2` in both `pyproject.toml` and `environment-py312-dev.yaml` for compatibility. (#30)
+- Corrected the ABLE Workflow docs navigation link in `docs/docs/SUMMARY.md` to point to `/latest/overview/`. (#30)
+- Use an explicit `env.CODECOV_TOKEN` guard and token wiring for both Codecov upload steps in `.github/workflows/main.yml` to avoid secret-resolution failures. (#30)
+
 ## 0.1.1 - 2026-03-14
 
 ### Changed
