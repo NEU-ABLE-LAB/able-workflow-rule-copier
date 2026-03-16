@@ -20,10 +20,10 @@ from loguru import logger
 
 from tests.template.conftest import (
     EXAMPLES,
-    make_copier_config,
-    new_copie,
     TEMPLATE_PACKAGE_DIR,
     TEMPLATE_RULE_DIR,
+    make_copier_config,
+    new_copie,
     run_copie_with_output_control,
 )
 from tests.template.tox.conftest import _list_tox_envs
