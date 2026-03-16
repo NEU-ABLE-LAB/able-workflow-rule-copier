@@ -65,8 +65,8 @@ class _DummyCopie:
 # Tests
 # ---------------------------------------------------------------------------
 def test_make_copier_config_creates_expected_artifacts(tmp_path: Path) -> None:
-    """_make_copier_config should write a proper YAML file + dirs."""
-    cfg_path = seg._make_copier_config(tmp_path)
+    """make_copier_config should write a proper YAML file + dirs."""
+    cfg_path = seg.make_copier_config(tmp_path)
 
     #  paths exist
     assert cfg_path.is_file()
@@ -108,8 +108,17 @@ def _prepare_single_example(
     seg.TEMPLATE_PACKAGE_DIR.mkdir()
     seg.TEMPLATE_RULE_DIR.mkdir()
 
-    # 4. stub Copie ----------------------------------------------------------
-    monkeypatch.setattr(seg, "Copie", _DummyCopie)
+    # 4. stub new_copie ------------------------------------------------------
+    monkeypatch.setattr(
+        seg,
+        "new_copie",
+        lambda *, template_dir, test_dir, config_file, parent_result=None: _DummyCopie(
+            default_template_dir=template_dir,
+            test_dir=test_dir,
+            config_file=config_file,
+            parent_result=parent_result,
+        ),
+    )
 
     # The script’s logic will end up here:
     sentinel = (

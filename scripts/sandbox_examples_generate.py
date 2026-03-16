@@ -27,7 +27,6 @@ Usage
 
 from __future__ import annotations
 
-import importlib.util
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -35,15 +34,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import typer
-from pytest_copie.plugin import Copie, Result
 from ruamel.yaml import YAML
+
+from scripts.copie_helpers import (
+    load_module_from_path,
+    make_copier_config,
+    new_copie,
+)
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
 ensure_package_repo_path = PROJECT_ROOT / "scripts" / "pull_able_workflow_copier.py"
-module_name = ensure_package_repo_path.stem
-spec = importlib.util.spec_from_file_location(module_name, ensure_package_repo_path)
-module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
-spec.loader.exec_module(module)  # type: ignore[union-attr]
+module = load_module_from_path(ensure_package_repo_path)
 ensure_package_template_repo = module.ensure_package_template_repo
 
 ###############################################################################
@@ -54,51 +55,6 @@ ensure_package_template_repo = module.ensure_package_template_repo
 TEMPLATE_PACKAGE_DIR: Path = ensure_package_template_repo(PROJECT_ROOT)
 TEMPLATE_RULE_DIR: Path = PROJECT_ROOT  # this repo
 SANDBOX_ROOT: Path = PROJECT_ROOT / "sandbox"
-
-
-###############################################################################
-#  Convenience helpers                                                         #
-###############################################################################
-
-
-def _make_copier_config(work_root: Path) -> Path:
-    """
-    Re-implement the `_copier_config_file` fixture: create a copier config file
-    that points into *work_root* and return its path.
-    """
-    copier_dir = work_root / "copier"
-    replay_dir = work_root / "copier_replay"
-    copier_dir.mkdir(parents=True, exist_ok=True)
-    replay_dir.mkdir(parents=True, exist_ok=True)
-
-    # Build a small copier-config and write it with ruamel.yaml
-    config = {"copier_dir": str(copier_dir), "replay_dir": str(replay_dir)}
-    config_path = work_root / "config"
-
-    yaml = YAML()
-    yaml.indent(mapping=2, sequence=4, offset=2)
-    with config_path.open("w", encoding="utf-8") as fp:
-        yaml.dump(config, fp)
-
-    return config_path
-
-
-def _new_copie_instance(
-    *,
-    template_dir: Path,
-    test_dir: Path,
-    config_file: Path,
-    parent_result: Result | None = None,
-) -> Copie:
-    """
-    A tiny wrapper that makes it explicit what we need to pass to `Copie(...)`.
-    """
-    return Copie(
-        default_template_dir=template_dir.resolve(),
-        test_dir=test_dir.resolve(),
-        config_file=config_file.resolve(),
-        parent_result=parent_result,
-    )
 
 
 ###############################################################################
@@ -179,12 +135,12 @@ def generate_cmd(
 
         # A dedicated temp root for *all* Copie runs belonging to this example
         tmp_root = Path(tempfile.mkdtemp(prefix=f"copie_{ex.name}_"))
-        config_file = _make_copier_config(tmp_root)
+        config_file = make_copier_config(tmp_root)
 
         # ───── 1. Run the *package* template ────────────────────────────────
         package_test_dir = ex_dir / "package_run"
         package_test_dir.mkdir()
-        c_pkg = _new_copie_instance(
+        c_pkg = new_copie(
             template_dir=TEMPLATE_PACKAGE_DIR,
             test_dir=package_test_dir,
             config_file=config_file,
@@ -208,7 +164,7 @@ def generate_cmd(
         # ───── 2. Run the *rule* template (child) ───────────────────────────
         rule_test_dir = ex_dir / "rule_run"
         rule_test_dir.mkdir()
-        c_rule = _new_copie_instance(
+        c_rule = new_copie(
             template_dir=TEMPLATE_RULE_DIR,
             test_dir=rule_test_dir,
             config_file=config_file,
