@@ -19,10 +19,10 @@ Usage
 -----
 
     # All examples
-    python scripts/sandbox_examples_generate.py
+    python -m scripts.sandbox_examples_generate
 
     # Only specific examples
-    python scripts/sandbox_examples_generate.py example-answers-able
+    python -m scripts.sandbox_examples_generate example-answers-able
 """
 
 from __future__ import annotations
