@@ -8,12 +8,12 @@ from loguru import logger
 from ruamel.yaml import YAML
 
 REPO_URL = "https://github.com/NEU-ABLE-LAB/able-workflow-copier.git"
-PR_YML_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "pr.yml"
+PR_YML_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "ci.yml"
 
 
 def get_commit_hash_from_pr_yml(pr_yml_path: Path) -> str:
     """
-    Extract the commit hash from the `.github/workflows/pr.yml` file.
+    Extract the commit hash from the `.github/workflows/ci.yml` file.
     """
     yaml = YAML(typ="safe")
     with pr_yml_path.open("r") as f:
@@ -21,7 +21,7 @@ def get_commit_hash_from_pr_yml(pr_yml_path: Path) -> str:
     try:
         steps = data["jobs"]["tox"]["steps"]
     except (KeyError, TypeError):
-        raise RuntimeError("Could not find 'jobs.tox.steps' in pr.yml")
+        raise RuntimeError("Could not find 'jobs.tox.steps' in ci.yml")
     for step in steps:
         if (
             isinstance(step, dict)
@@ -33,9 +33,9 @@ def get_commit_hash_from_pr_yml(pr_yml_path: Path) -> str:
                 return ref
             else:
                 raise RuntimeError(
-                    "Commit hash 'ref' not found or not a string in pr.yml"
+                    "Commit hash 'ref' not found or not a string in ci.yml"
                 )
-    raise RuntimeError("Could not find commit hash in pr.yml")
+    raise RuntimeError("Could not find commit hash in ci.yml")
 
 
 def ensure_package_template_repo(project_root: Path) -> Path:

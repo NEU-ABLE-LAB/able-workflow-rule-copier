@@ -7,6 +7,9 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 ### Changed
 
 - Updated rule post-copier guidance for dry-run manifest based rules to use `data/tests/dry-run/` with `include:` and `touch:` entries.
+- Consolidated `.github/workflows/pr.yml` and `.github/workflows/main.yml` into `.github/workflows/ci.yml`, with Codecov secrets only used on pushes to `main`.
+- Updated CI badge links in `README.md` and `docs/docs/index.md` to reference `.github/workflows/ci.yml`.
+- Updated contributing docs references from `.github/workflows/pr.yml` to `.github/workflows/ci.yml`.
 
 ## v0.1.2 - 2026-03-15
 
