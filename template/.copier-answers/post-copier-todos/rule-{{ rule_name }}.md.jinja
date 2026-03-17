@@ -28,6 +28,7 @@ This issue is for tracking the development of a rule that was copied from the `a
      - `tox -e py312-workflow-unit-docs`
 4. [ ] `tests/workflow/rules/test_snakemake_{{ rule_name }}.py`
    1. [ ] Modify `create_dummy_input_file()` to create the dummy to subsets of data for tests.
+          If the tests uses dry-run, create a manifest and place them under `data/tests/dry-run/`
    2. [ ] Moidfy `test_rule_{{ rule_name }}()` to check that output data was created.
    3. [ ] Confirm tests pass with the following command:
      - `tox -e py312-workflow-rules`
