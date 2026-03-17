@@ -2,6 +2,12 @@
 
 Human-readable log of changes between versions. Follows the [Common Changelog style guide](https://common-changelog.org/).
 
+## v0.1.3-dev
+
+### Changed
+
+- Updated rule post-copier guidance for dry-run manifest based rules to use `data/tests/dry-run/` with `include:` and `touch:` entries.
+
 ## v0.1.2 - 2026-03-15
 
 ### Changed
