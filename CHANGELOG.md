@@ -8,11 +8,14 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 - Reworked docs publishing in `.github/workflows/docs-pages.yml` so pushes/manual runs deploy `dev`, releases deploy the tagged version, and `mike set-default` runs only for releases. (#30)
 - Updated `.github/workflows/pr.yml` to use public `NEU-ABLE-LAB/able-workflow-copier@v0.1.1`, added workflow concurrency controls, and removed private-token dependent nested-clone/Codecov steps. (#30)
+- Enforced uniformity of scripts and tests across `able-workflow*-copier` repos
+- `sandbox_examples_generate` is now module `scripts.sandbox_examples_generate` instead of script
 
 ### Added
 
 - Added `.github/workflows/main.yml` to run tox on `main` (Python 3.11/3.12), generate coverage/test-result reports, and upload to Codecov when a token is available. (#30)
 - Added Codecov and `tox Main Tests` workflow badges to `README.md` and `docs/docs/index.md`. (#30)
+- Refactored `copie_helpers.py` functions into their own file.
 
 ### Removed
 

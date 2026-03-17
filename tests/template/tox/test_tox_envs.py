@@ -20,11 +20,11 @@ from loguru import logger
 
 from tests.template.conftest import (
     EXAMPLES,
-    _make_copier_config,
-    _new_copie,
     TEMPLATE_PACKAGE_DIR,
     TEMPLATE_RULE_DIR,
-    _run_copie_with_output_control,
+    make_copier_config,
+    new_copie,
+    run_copie_with_output_control,
 )
 from tests.template.tox.conftest import _list_tox_envs
 
@@ -152,12 +152,12 @@ def pytest_generate_tests(metafunc):
 
                 # Prepare a temporary directory for rendering
                 tmp_root = Path(tempfile.mkdtemp(prefix=f"collect_{var_id}_"))
-                config_file = _make_copier_config(tmp_root)
+                config_file = make_copier_config(tmp_root)
 
                 # Render package template
                 pkg_dir = tmp_root / "pkg"
                 pkg_dir.mkdir()
-                pkg_copie = _new_copie(
+                pkg_copie = new_copie(
                     template_dir=TEMPLATE_PACKAGE_DIR,
                     test_dir=pkg_dir,
                     config_file=config_file,
@@ -166,7 +166,7 @@ def pytest_generate_tests(metafunc):
                 # Run the package template with output control
                 # to avoid cluttering the test output with copier's own logs.
                 # This is especially useful when running tests with `-v` or `-vv`.
-                pkg = _run_copie_with_output_control(
+                pkg = run_copie_with_output_control(
                     metafunc.config,
                     pkg_copie,
                     ex.package_answers,
@@ -176,7 +176,7 @@ def pytest_generate_tests(metafunc):
                 # Render rule template (child)
                 rule_dir = tmp_root / "rule"
                 rule_dir.mkdir()
-                rule_copie = _new_copie(
+                rule_copie = new_copie(
                     template_dir=TEMPLATE_RULE_DIR,
                     test_dir=rule_dir,
                     config_file=config_file,
@@ -186,7 +186,7 @@ def pytest_generate_tests(metafunc):
                 # Run the rule template with output control
                 # to avoid cluttering the test output with copier's own logs.
                 # This is especially useful when running tests with `-v` or `-vv`.
-                rule = _run_copie_with_output_control(
+                rule = run_copie_with_output_control(
                     metafunc.config,
                     rule_copie,
                     ex.rule_answers,
