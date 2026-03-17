@@ -893,7 +893,8 @@
 </ul>
 </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>tests/workflow/rules/test_snakemake_{{ rule_name }}.py</code></li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Modify <code>create_dummy_input_file()</code> to create the dummy to subsets of data for tests.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Modify <code>create_dummy_input_file()</code> to create the dummy to subsets of data for tests.
+          If the tests uses dry-run, create a manifest and place them under <code>data/tests/dry-run/</code></li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Moidfy <code>test_rule_{{ rule_name }}()</code> to check that output data was created.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Confirm tests pass with the following command:<ul>
 <li><code>tox -e py312-workflow-rules</code></li>
