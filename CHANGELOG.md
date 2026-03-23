@@ -8,7 +8,7 @@ Human-readable log of changes between versions. Follows the [Common Changelog st
 
 ### Added
 
-- [Better Jinja](https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml) vscode extension recommendation
+- [Better Jinja](https://marketplace.visualstudio.com/items?itemName=samuelcolvin.jinjahtml) VS Code extension recommendation.
 
 ### Removed
 
