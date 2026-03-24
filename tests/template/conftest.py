@@ -84,6 +84,27 @@ def _example_id(example_dir: Path | None) -> str:
     return "no-example-answers" if example_dir is None else example_dir.name
 
 
+class _LazyExamples:
+    def __iter__(self):
+        for example_dir in _discover_example_dirs():
+            pkg = example_dir / "package.yml"
+            rule_yaml = example_dir / "rule.yml"
+            try:
+                yield Example(
+                    name=example_dir.name,
+                    package_answers=_read_yaml(pkg),
+                    rule_answers=_read_yaml(rule_yaml),
+                )
+            except (FileNotFoundError, OSError, ValueError, TypeError) as exc:
+                pytest.fail(
+                    f"Failed to load example answers in {example_dir}: {exc}",
+                    pytrace=False,
+                )
+
+
+EXAMPLES = _LazyExamples()
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Fixture
 # ─────────────────────────────────────────────────────────────────────────────
