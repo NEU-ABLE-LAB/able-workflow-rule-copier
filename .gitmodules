@@ -1,0 +1,3 @@
+[submodule "submodules/able-workflow-copier"]
+	path = submodules/able-workflow-copier
+	url = https://github.com/NEU-ABLE-LAB/able-workflow-copier.git
