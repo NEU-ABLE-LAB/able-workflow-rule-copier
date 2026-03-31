@@ -31,7 +31,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, cast
 
 import typer
 from ruamel.yaml import YAML
@@ -45,16 +45,24 @@ from scripts.copie_helpers import (
 PROJECT_ROOT: Path = Path(__file__).resolve().parents[1]
 ensure_package_repo_path = PROJECT_ROOT / "scripts" / "pull_able_workflow_copier.py"
 module = load_module_from_path(ensure_package_repo_path)
-ensure_package_template_repo = module.ensure_package_template_repo
+ensure_package_template_repo: Callable[[Path], Path] = cast(
+    Callable[[Path], Path], module.ensure_package_template_repo
+)
 
 ###############################################################################
 #  Static paths used by every run                                             #
 ###############################################################################
 
 
-TEMPLATE_PACKAGE_DIR: Path = ensure_package_template_repo(PROJECT_ROOT)
+TEMPLATE_PACKAGE_DIR: Path | None = None
 TEMPLATE_RULE_DIR: Path = PROJECT_ROOT  # this repo
 SANDBOX_ROOT: Path = PROJECT_ROOT / "sandbox"
+
+
+def _resolve_package_template_dir() -> Path:
+    if TEMPLATE_PACKAGE_DIR is not None:
+        return TEMPLATE_PACKAGE_DIR
+    return ensure_package_template_repo(PROJECT_ROOT)
 
 
 ###############################################################################
@@ -113,6 +121,7 @@ def generate_cmd(
     but you can run it ad-hoc from the shell - no pytest needed.
     """
     SANDBOX_ROOT.mkdir(exist_ok=True)
+    template_package_dir = _resolve_package_template_dir()
 
     # Determine the list of examples we need to work on
     to_render: list[Example]
@@ -141,7 +150,7 @@ def generate_cmd(
         package_test_dir = ex_dir / "package_run"
         package_test_dir.mkdir()
         c_pkg = new_copie(
-            template_dir=TEMPLATE_PACKAGE_DIR,
+            template_dir=template_package_dir,
             test_dir=package_test_dir,
             config_file=config_file,
         )

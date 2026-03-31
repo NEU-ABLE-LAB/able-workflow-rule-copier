@@ -6,13 +6,24 @@ The test environments are managed with `tox`.
 
 ### Validating template generation
 
-This template is to be run in a project that was created with [`able-workflow-copier`]({{ able_workflow_copier_docs }}). To test the rendering of this template, that parent template needs to also be rendered. The version of the parent template that are used for tests is specified in `.github/workflows/ci.yml` and pulled in `scripts/pull_able_workflow_copier.py`.
+This template is to be run in a project that was created with [`able-workflow-copier`]({{ able_workflow_copier_docs }}). To test rendering, this repository uses the parent template from the git submodule at `submodules/able-workflow-copier`.
 
-!!! note "Updating `able-workflow-copier` version"
+!!! note "Initializing and updating parent template submodules"
 
-    Once `scripts/sandbox_examples_generate.py` or `tests/template/conftest.py` create the local copy of the `able-workflow-copier` repo in the `sandbox/` they do not check to see if it needs updating. To ensure that the local and cloud repos are in sync, regularly run `rm -rf sandbox/able-workflow-copier`
+    Initialize submodules before running template tests:
 
-Example Copier answers are provided in the `answers/` directory. The followign command runs the tests for these examples:
+    ```bash
+    git submodule update --init --recursive
+    ```
+
+    To pull the latest submodule commits recorded by the current branch:
+
+    ```bash
+    git submodule sync --recursive
+    git submodule update --init --recursive
+    ```
+
+Example Copier answers are provided in the `answers/` directory. The following command runs the tests for these examples:
 
     ```bash
     tox run -e py312-template-generate
