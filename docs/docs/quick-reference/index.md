@@ -1,5 +1,10 @@
 # Quick Reference
 
+??? note "Audience: Project Developers"
+
+    This section is for project developers applying `able-workflow-rule-copier` to an existing workflow project.
+    If you are maintaining the template itself, use this repository's contributing documentation instead.
+
 Apply this Copier template to an existing [`able-workflow-copier`]({{ able_workflow_copier_docs }}) project (i.e., `./`) to create a new Snakemake rule with the following commands:
 
 ```bash
