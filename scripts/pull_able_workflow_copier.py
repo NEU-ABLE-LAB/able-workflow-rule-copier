@@ -1,77 +1,35 @@
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
-from typing import Any
 
 from loguru import logger
-from ruamel.yaml import YAML
 
-REPO_URL = "https://github.com/NEU-ABLE-LAB/able-workflow-copier.git"
-PR_YML_PATH = Path(__file__).parent.parent / ".github" / "workflows" / "ci.yml"
+PARENT_TEMPLATE_SUBMODULE = Path("submodules") / "able-workflow-copier"
 
 
-def get_commit_hash_from_pr_yml(pr_yml_path: Path) -> str:
-    """
-    Extract the commit hash from the `.github/workflows/ci.yml` file.
-    """
-    yaml = YAML(typ="safe")
-    with pr_yml_path.open("r") as f:
-        data: Any = yaml.load(f)
-    try:
-        steps = data["jobs"]["tox"]["steps"]
-    except (KeyError, TypeError):
-        raise RuntimeError("Could not find 'jobs.tox.steps' in ci.yml")
-    for step in steps:
-        if (
-            isinstance(step, dict)
-            and step.get("name", "").strip()
-            == "Checkout the `able-workflow-copier` repository"
-        ):
-            ref = step.get("with", {}).get("ref")
-            if isinstance(ref, str):
-                return ref
-            else:
-                raise RuntimeError(
-                    "Commit hash 'ref' not found or not a string in ci.yml"
-                )
-    raise RuntimeError("Could not find commit hash in ci.yml")
+def _missing_submodule_error(project_root: Path, submodule_dir: Path) -> RuntimeError:
+    return RuntimeError(
+        "Required parent template submodule is missing or not initialized.\n"
+        f"Expected path: {submodule_dir}\n"
+        "Initialize submodules from the repository root with:\n"
+        "  git submodule update --init --recursive\n"
+        f"Repository root: {project_root}"
+    )
 
 
 def ensure_package_template_repo(project_root: Path) -> Path:
     """
-    Guarantee that ``sandbox/able-workflow-copier`` exists under *project_root*.
-    If it is missing, clone the repo, checkout the specific commit, and return the directory path.
-    """
-    dest = (project_root / "sandbox" / "able-workflow-copier").resolve()
-    if dest.is_dir():
-        logger.debug("Package template already exists at {}", dest)
-        return dest
+    Return the path to the checked-out parent template submodule.
 
-    logger.debug("Cloning package template into {}", dest)
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    commit_hash = get_commit_hash_from_pr_yml(PR_YML_PATH)
-    try:
-        subprocess.check_call(["git", "clone", REPO_URL, str(dest)])
-        subprocess.check_call(["git", "config", "advice.detachedHead", "false"])
-        subprocess.check_call(
-            [
-                "git",
-                "-c",
-                "advice.detachedHead=false",
-                "checkout",
-                commit_hash,
-            ],
-            cwd=str(dest),
-        )
-        logger.success(
-            "✔ cloned able-workflow-copier at commit {} → {}", commit_hash, dest
-        )
-    except FileNotFoundError:  # git not installed
-        raise RuntimeError(
-            "`git` executable not found - cannot clone package template."
-        )
-    except subprocess.CalledProcessError as exc:
-        raise RuntimeError(f"Git clone failed: {exc}") from exc
+    The caller is expected to initialize git submodules before running tests.
+    This helper fails fast with actionable guidance when the submodule is missing.
+    """
+    dest = (project_root / PARENT_TEMPLATE_SUBMODULE).resolve()
+    if not dest.is_dir():
+        raise _missing_submodule_error(project_root, dest)
+    if not (dest / ".git").exists():
+        raise _missing_submodule_error(project_root, dest)
+
+    logger.debug("Using parent template submodule at {}", dest)
 
     return dest
