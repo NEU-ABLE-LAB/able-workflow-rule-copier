@@ -18,6 +18,12 @@ This template assumes that you have already created an [`able-workflow-copier`](
 - [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
 - [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
 
+## Who These Docs Are For
+
+- **Template developers**: contributors maintaining `able-workflow-rule-copier`.
+- **Project developers**: people applying this template to add a new workflow rule to an existing project.
+- **Project users and project consumers**: people who only need to run or import a generated workflow should primarily use the generated project's documentation instead of this template repository.
+
 ## Contributing
 
 ### Environment configuration
@@ -39,7 +45,7 @@ See the environment configuration [`able-workflow-copier`](https://github.com/NE
    conda activate able-workflow-rule-copier
    ```
 
-   Configure the `able-workflow-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
+   Configure `able-workflow-rule-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
 
 2. Install pre-commit into the repo to run checks on every commit
 
