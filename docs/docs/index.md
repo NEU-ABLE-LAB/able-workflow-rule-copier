@@ -7,48 +7,28 @@
 [![codecov](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-rule-copier/graph/badge.svg?token=1K05YM2HIC)](https://codecov.io/gh/NEU-ABLE-LAB/able-workflow-rule-copier)
 [![tox Main Tests](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier/actions/workflows/ci.yml/badge.svg)](https://github.com/NEU-ABLE-LAB/able-workflow-rule-copier/actions/workflows/ci.yml)
 
-A [copier](https://copier.readthedocs.io/en/stable/) template for generating a snakemake workflow rule that may use the project's python package.
+A [copier](https://copier.readthedocs.io/en/stable/) template for adding a Snakemake rule, its script, and the associated tests and docs inside an existing project.
 
-This template assumes that you have already created an [`able-workflow-copier`]({{ able_workflow_copier_docs }}) project and have optionally created a [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }}) module and [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }}) ETL process.
+This template assumes that you have already created an [`able-workflow-copier`]({{ able_workflow_copier_docs }}) project and may already have a [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }}) module and [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }}) ETL process.
 
-## Overview of ABLE Workflow copier templates
+## Start Here
+
+1. If you want to add a new rule to an existing project, start with [Quick Reference](quick-reference/).
+2. If you need the ecosystem-level rationale behind the template stack, go back to the main [`able-workflow-copier` Overview]({{ able_workflow_copier_docs }}/overview/).
+3. If you are maintaining this template repository itself, use [Contributing](contributing/).
+
+## What This Template Adds
+
+- A new Snakemake rule declaration.
+- The matching Python script scaffold.
+- Unit and workflow-rule tests for the new rule.
+- Maintainer-facing docs on how to update the generated rule scaffold.
+
+## Template Ecosystem
 
 - [`able-workflow-copier`]({{ able_workflow_copier_docs }})
 - [`able-workflow-module-copier`]({{ able_workflow_module_copier_docs }})
 - [`able-workflow-etl-copier`]({{ able_workflow_etl_copier_docs }})
 - [`able-workflow-rule-copier`]({{ able_workflow_rule_copier_docs }})
 
-## Who These Docs Are For
-
-- **Template developers**: contributors maintaining `able-workflow-rule-copier`.
-- **Project developers**: people applying this template to add a new workflow rule to an existing project.
-- **Project users and project consumers**: people who only need to run or import a generated workflow should primarily use the generated project's documentation instead of this template repository.
-
-## Contributing
-
-### Environment configuration
-
-See the environment configuration [`able-workflow-copier`](https://github.com/NEU-ABLE-LAB/able-workflow-copier).
-
-1. Create a development environment with conda
-
-   ```bash
-   # Create the environment (or update and prune if it already exists)
-   conda env update --name able-workflow-rule-copier --file environment-py312-dev.yaml --prune
-   ```
-
-   Alternatively, run the script `scripts/conda_update.sh`.
-
-   Then activate
-
-   ```bash
-   conda activate able-workflow-rule-copier
-   ```
-
-   Configure `able-workflow-rule-copier` as the default python environment in the [Python Environments VSCode extension](https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-python-envs).
-
-2. Install pre-commit into the repo to run checks on every commit
-
-   ```bash
-   (able-workflow-rule-copier) pre-commit install
-   ```
+Project users and project integrators should primarily use the generated project's documentation instead of this template repository.
