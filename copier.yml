@@ -132,7 +132,7 @@ _tasks:
       ruff check --fix ./
     when: "{{ format_code }}"
   - command: >-
-      snakefmt --config snakefmt.toml workflow/
+      snakefmt --config pyproject.toml workflow/
     when: "{{ format_code }}"
 
 _message_after_copy: |
